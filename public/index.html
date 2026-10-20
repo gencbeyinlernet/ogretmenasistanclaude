@@ -1,0 +1,2546 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Burak TURGUT Okul Takip Sistemi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Düzen: üstte kareli defter dokulu başlık bandı ve sekmeler. Panel'de solda geniş öğrenci defteri, sağda dar Drive / takvim sütunu.
+   Atölye'de solda proje listesi, sağda başvuru metni editörü. */
+:root{
+  --paper:#F2F4F8;
+  --surface:#FFFFFF;
+  --surface-2:#F6F8FB;
+  --ink:#141E36;
+  --ink-2:#55617A;
+  --ink-3:#7F899F;
+  --line:#DAE0EA;
+  --line-2:#E8ECF2;
+  --accent:#2343C4;
+  --accent-ink:#FFFFFF;
+  --accent-soft:#E6EBFB;
+  --grid:rgba(35,67,196,.08);
+  --ok:#2B7A4B; --ok-soft:#E2F2E7;
+  --warn:#94600A; --warn-soft:#FBEFD9;
+  --bad:#BE323A; --bad-soft:#FBE5E6;
+  --p-tek:#BF4E1C; --p-tek-soft:#FCE9DE;
+  --p-etw:#0B7680; --p-etw-soft:#DCF0F1;
+  --p-tub:#4A3FB0; --p-tub-soft:#ECE9FB;
+  --scrim:rgba(12,18,34,.42);
+  --shadow:0 1px 2px rgba(20,30,54,.06),0 18px 40px -18px rgba(20,30,54,.35);
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0D1220; --surface:#141B2B; --surface-2:#192236;
+  --ink:#E5EAF4; --ink-2:#A3ADC0; --ink-3:#737E95;
+  --line:#28324A; --line-2:#1F283D;
+  --accent:#8299FF; --accent-ink:#0D1220; --accent-soft:#1D2950;
+  --grid:rgba(130,153,255,.07);
+  --ok:#5CC487; --ok-soft:#14301F;
+  --warn:#E6B054; --warn-soft:#382A10;
+  --bad:#FF7B80; --bad-soft:#3B1A1E;
+  --p-tek:#FF9866; --p-tek-soft:#3A2015;
+  --p-etw:#52CAD3; --p-etw-soft:#11323A;
+  --p-tub:#A99FFF; --p-tub-soft:#262250;
+  --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 18px 40px -18px rgba(0,0,0,.7);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#0D1220; --surface:#141B2B; --surface-2:#192236;
+  --ink:#E5EAF4; --ink-2:#A3ADC0; --ink-3:#737E95;
+  --line:#28324A; --line-2:#1F283D;
+  --accent:#8299FF; --accent-ink:#0D1220; --accent-soft:#1D2950;
+  --grid:rgba(130,153,255,.07);
+  --ok:#5CC487; --ok-soft:#14301F;
+  --warn:#E6B054; --warn-soft:#382A10;
+  --bad:#FF7B80; --bad-soft:#3B1A1E;
+  --p-tek:#FF9866; --p-tek-soft:#3A2015;
+  --p-etw:#52CAD3; --p-etw-soft:#11323A;
+  --p-tub:#A99FFF; --p-tub-soft:#262250;
+  --scrim:rgba(0,0,0,.55);
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 18px 40px -18px rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.ic{width:18px;height:18px;flex:none}
+.ic.sm{width:14px;height:14px}
+.ic.lg{width:38px;height:38px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--ink-3)}
+.w{color:var(--warn)} .b{color:var(--bad)}
+.tag{font:600 10.5px/1 var(--f-body);letter-spacing:.05em;padding:3px 6px;border-radius:5px;background:var(--warn-soft);color:var(--warn);font-style:normal;vertical-align:1px;white-space:nowrap}
+.eyebrow{font:600 11.5px/1.3 var(--f-body);letter-spacing:.12em;color:var(--ink-3);margin-bottom:4px}
+
+/* ── Başlık ── */
+.top{background-color:var(--surface);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:22px 22px;background-position:-1px -1px;border-bottom:1px solid var(--line)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:14px 20px;flex-wrap:wrap;padding-block:22px 12px}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.mark{width:46px;height:46px;border-radius:11px;background:var(--ink);color:var(--surface);display:grid;place-items:center;font:800 18px/1 var(--f-display);letter-spacing:.02em;flex:none}
+.brand-name{display:block;font:760 23px/1.1 var(--f-display);letter-spacing:-.015em}
+.brand-sub{display:block;font:600 11.5px/1.4 var(--f-body);letter-spacing:.16em;color:var(--ink-2);margin-top:3px}
+.top-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font:500 12.5px/1 var(--f-mono);color:var(--ink-2);white-space:nowrap}
+.chip b{color:var(--ink);font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3);flex:none}
+.sync[data-mode="db"] .dot{background:var(--ok)}
+.sync[data-mode="local"] .dot{background:var(--warn)}
+.tabs{display:flex;gap:28px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;border:0;background:none;padding:12px 0 13px;font:600 15px/1 var(--f-body);color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.localnote{background:var(--warn-soft);color:var(--ink);font-size:13.5px}
+.localnote .wrap{padding-block:9px}
+main.wrap{padding-block:26px 72px}
+
+/* ── Ortak parçalar ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 15px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px/1 var(--f-body);cursor:pointer;text-decoration:none;white-space:nowrap;transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--ink-3)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--surface-2);border-color:var(--line)}
+.btn.sm{height:32px;padding:0 11px;font-size:13px;border-radius:8px}
+.btn.notes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.notes:hover{border-color:var(--accent);filter:brightness(1.03)}
+.btn.ai{color:var(--accent);border:1px dashed var(--accent);background:transparent}
+.btn.ai:hover{background:var(--accent-soft)}
+.btn.danger-ghost{color:var(--bad);border-color:transparent;background:transparent}
+.btn.danger-ghost:hover{background:var(--bad-soft)}
+.btn.armed,.icon-btn.armed{background:var(--bad)!important;color:var(--surface)!important;border-color:var(--bad)!important}
+.icon-btn{width:34px;height:34px;display:inline-grid;place-items:center;border-radius:8px;border:1px solid transparent;background:none;color:var(--ink-3);cursor:pointer;flex:none;padding:0}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink);border-color:var(--line)}
+.icon-btn.armed{width:auto;padding:0 10px;font:600 12px/1 var(--f-body)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;min-width:0}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px 16px;flex-wrap:wrap;padding:20px 22px 14px}
+.card-head h2{font-size:22px;font-weight:720}
+.side .card-head{padding:18px 18px 12px}
+.side .card-head h2{font-size:18px}
+.sub{color:var(--ink-2);font-size:14px;margin-top:3px}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.view-head h1{font-size:32px;font-weight:740;line-height:1.08}
+.empty{padding:36px 22px;text-align:center;color:var(--ink-2);display:grid;justify-items:center;gap:10px}
+.empty .ic.lg{color:var(--ink-3)}
+.empty h3{font-size:17px;color:var(--ink);font-weight:650}
+.empty p{max-width:46ch;font-size:14px}
+.empty.compact{padding:18px 18px 22px;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:999px;font:600 12px/1 var(--f-body);white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.iyi{background:var(--ok-soft);color:var(--ok)}
+.pill.takip{background:var(--warn-soft);color:var(--warn)}
+.pill.dikkat{background:var(--bad-soft);color:var(--bad)}
+.meter{height:8px;border-radius:99px;background:var(--line-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .3s}
+.inp{height:40px;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:0 12px;width:100%;min-width:0}
+textarea.inp{height:auto;padding:10px 12px;line-height:1.55;resize:vertical}
+select.inp{padding-right:6px}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field{display:grid;gap:6px;min-width:0;border:0;padding:0;margin:0}
+.field > span,.field > legend{font:600 12.5px/1.2 var(--f-body);color:var(--ink-2);padding:0}
+.field em{font-style:normal;font-weight:500;color:var(--ink-3)}
+.steps{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;max-width:100%;width:max-content}
+.steps button{border:0;border-right:1px solid var(--line);background:var(--surface);padding:0 14px;height:36px;font:600 13px/1 var(--f-body);color:var(--ink-2);cursor:pointer}
+.steps button:last-child{border-right:0}
+.steps button:hover{color:var(--ink);background:var(--surface-2)}
+.steps button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.steps.durum button[aria-pressed="true"][data-v="iyi"]{background:var(--ok);color:var(--surface)}
+.steps.durum button[aria-pressed="true"][data-v="takip"]{background:var(--warn);color:var(--surface)}
+.steps.durum button[aria-pressed="true"][data-v="dikkat"]{background:var(--bad);color:var(--surface)}
+.ai-only,.dl-only{display:none!important}
+body.has-ai .ai-only,body.has-dl .dl-only{display:inline-flex!important}
+.ai-block{display:none}
+body.has-ai .ai-block{display:block}
+
+/* ── Panel ── */
+.panel-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.side{display:grid;gap:20px;min-width:0}
+.stat-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.spill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:999px;border:1px solid transparent;font:600 12.5px/1 var(--f-body);cursor:pointer}
+.spill .dot{background:currentColor}
+.spill b{font-family:var(--f-mono);font-weight:600}
+.spill.dikkat{background:var(--bad-soft);color:var(--bad)}
+.spill.takip{background:var(--warn-soft);color:var(--warn)}
+.spill.iyi{background:var(--ok-soft);color:var(--ok)}
+.spill[aria-pressed="true"]{border-color:currentColor}
+.banner{margin:0 22px 14px;padding:10px 12px 10px 14px;border-radius:10px;background:var(--warn-soft);color:var(--ink);font-size:13.5px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:0 22px 14px;border-bottom:1px solid var(--line)}
+.search{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface-2);flex:1 1 220px;min-width:0;color:var(--ink-3)}
+.search input{border:0;background:none;outline:none;flex:1;min-width:0;color:var(--ink);height:100%}
+.search:focus-within{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.cchips{display:flex;gap:6px;flex-wrap:wrap}
+.cchip{height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font:500 13px/1 var(--f-mono);cursor:pointer;color:var(--ink-2)}
+.cchip:hover{color:var(--ink);border-color:var(--ink-3)}
+.cchip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.shead,.srow{display:grid;grid-template-columns:minmax(0,1.5fr) 62px 104px 96px minmax(0,2fr);gap:14px;align-items:center;padding-left:22px;padding-right:22px}
+.shead{font:600 11px/1 var(--f-body);letter-spacing:.09em;color:var(--ink-3);padding-block:12px;border-bottom:1px solid var(--line-2)}
+.srow{width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line-2);padding-block:12px;cursor:pointer;color:inherit;font-size:14px}
+.srow:last-child{border-bottom:0;border-radius:0 0 14px 14px}
+.srow:hover{background:var(--surface-2)}
+.s-name{display:flex;align-items:center;gap:11px;min-width:0}
+.s-name .nm{min-width:0}
+.s-name b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.s-name small{display:block;color:var(--ink-3);font:500 12px/1.4 var(--f-mono)}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 12.5px/1 var(--f-body);background:var(--accent-soft);color:var(--accent);flex:none}
+.avatar.takip{background:var(--warn-soft);color:var(--warn)}
+.avatar.dikkat{background:var(--bad-soft);color:var(--bad)}
+.avatar.xs{width:22px;height:22px;font-size:10px}
+.s-class{font:500 13px/1 var(--f-mono)}
+.s-abs{font:500 13px/1 var(--f-mono);color:var(--ink-2)}
+.s-abs .ml{display:none}
+.s-last{color:var(--ink-2);font-size:13.5px;line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.s-last time{font:500 11.5px var(--f-mono);color:var(--ink-3);margin-right:7px}
+.files-body{padding-bottom:6px}
+.drive-main{display:flex;gap:6px;align-items:center;margin:0 14px 10px;padding:6px;border-radius:12px;background:var(--accent-soft);border:1px solid transparent}
+.drive-main:hover{border-color:var(--accent)}
+.drive-link{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:6px;color:var(--ink);text-decoration:none}
+.drive-ic{width:42px;height:42px;border-radius:10px;background:var(--surface);color:var(--accent);display:grid;place-items:center;flex:none}
+.dl-txt{flex:1;min-width:0}
+.dl-txt b{display:block;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dl-txt small{display:block;color:var(--ink-2);font:500 12px/1.4 var(--f-mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drive-link > .ic{color:var(--accent)}
+.lrow{display:flex;align-items:center;gap:6px;padding:6px 14px 6px 18px;border-top:1px solid var(--line-2)}
+.lrow a{flex:1;min-width:0;display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;padding:4px 0}
+.lrow a:hover b{color:var(--accent)}
+.lrow a > .ic{color:var(--ink-3)}
+.cal-body{padding:0 18px 18px;display:grid;gap:12px}
+.bigweek{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.bigweek b{font:780 42px/1 var(--f-display);letter-spacing:-.03em}
+.bigweek span{color:var(--ink-2);font-size:14px}
+.next{font-size:13.5px;color:var(--ink-2);border-top:1px dashed var(--line);padding-top:11px}
+.next b{color:var(--ink);font-weight:600}
+.mp{display:flex;gap:11px;align-items:center;width:100%;padding:11px 18px;border:0;border-top:1px solid var(--line-2);background:none;text-align:left;cursor:pointer;color:inherit}
+.mp:hover{background:var(--surface-2)}
+.mp:last-child{border-radius:0 0 14px 14px}
+.mp .mp-t{flex:1;min-width:0}
+.mp b{display:block;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mp small{display:block;font:500 12px/1.4 var(--f-mono);color:var(--ink-3)}
+.mp small.w{color:var(--warn)} .mp small.b{color:var(--bad)}
+.link-btn{background:none;border:0;color:var(--accent);font:600 13px/1 var(--f-body);cursor:pointer;padding:8px 0}
+.split{display:inline-flex;align-items:stretch}
+.split > a.btn{border-top-right-radius:0;border-bottom-right-radius:0}
+.menu{position:relative;display:inline-flex}
+.menu summary{list-style:none}
+.menu summary::-webkit-details-marker{display:none}
+.split .menu summary.btn{border-top-left-radius:0;border-bottom-left-radius:0;border-left-width:0;padding:0 10px}
+.menu-pop{position:absolute;left:0;top:calc(100% + 6px);z-index:20;width:280px;max-width:calc(100vw - 40px);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;display:grid;gap:2px}
+.menu-row{display:flex;align-items:center;gap:4px;padding:2px 2px 2px 10px;border-radius:8px}
+.menu-row:hover{background:var(--surface-2)}
+.menu-row a{flex:1;min-width:0;color:var(--ink);text-decoration:none;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:8px 0}
+.menu-pop .link-btn{text-align:left;padding:10px}
+
+/* ── Yıllık planlar ── */
+.year{padding:22px 22px 18px;margin-bottom:20px}
+.year-top{display:flex;justify-content:space-between;gap:16px 28px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px}
+.terms{display:flex;gap:10px 28px;flex-wrap:wrap;margin:0}
+.terms div{min-width:0}
+.terms dt{font:600 11.5px/1.3 var(--f-body);letter-spacing:.08em;color:var(--ink-3)}
+.terms dd{margin:3px 0 0;font-weight:600;font-size:14.5px}
+.tl-scroll{overflow-x:auto;padding-bottom:6px}
+.tl{display:grid;column-gap:3px;row-gap:6px;min-width:880px}
+.tl-m{grid-row:1;font:600 11px/1 var(--f-mono);color:var(--ink-3);white-space:nowrap}
+.tl-w{grid-row:2;height:40px;border-radius:5px;background:var(--line-2);display:flex;align-items:flex-end;justify-content:center;padding-bottom:5px;font:500 10px/1 var(--f-mono);color:var(--ink-3)}
+.tl-w.past{background:var(--accent-soft);color:var(--accent)}
+.tl-w.now{background:var(--accent);color:var(--accent-ink);font-weight:600;outline:2px solid var(--accent);outline-offset:2px}
+.tl-w.hol{background:repeating-linear-gradient(135deg,var(--warn-soft) 0 4px,transparent 4px 8px);box-shadow:inset 0 0 0 1px var(--warn-soft)}
+.tl-d{grid-row:3;height:24px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);font:600 11.5px/22px var(--f-body);color:var(--ink-2);padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.legend{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--ink-2);align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.legend .src{margin-left:auto;color:var(--ink-3)}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.plan{display:flex;flex-direction:column;gap:12px;padding:18px}
+.plan-top{display:flex;gap:12px;align-items:flex-start}
+.doc-ic{width:40px;height:48px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent);flex:none}
+.plan h3{font-size:16.5px;font-weight:650;line-height:1.3}
+.plan p{font-size:13.5px;color:var(--ink-2);margin-top:3px}
+.plan .host{font:500 12px/1.3 var(--f-mono);color:var(--ink-3);margin-top:4px}
+.plan-actions{margin-top:auto;display:flex;gap:8px;align-items:center;justify-content:space-between}
+.plan.add{border-style:dashed;background:transparent;align-items:center;justify-content:center;text-align:center;color:var(--ink-2);cursor:pointer;min-height:158px;font:600 14px/1.4 var(--f-body)}
+.plan.add:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Proje atölyesi ── */
+.atolye{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;align-items:start}
+.plist{position:sticky;top:16px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.plist-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 16px 12px}
+.plist-head h2{font-size:18px;font-weight:700}
+.pfilter{display:flex;gap:5px;padding:0 16px 12px;flex-wrap:wrap}
+.pf{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:none;font:600 12px/1 var(--f-body);color:var(--ink-2);cursor:pointer}
+.pf:hover{color:var(--ink)}
+.pf[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.plist-body{overflow-y:auto;border-top:1px solid var(--line-2)}
+.plist .banner{margin:12px 12px 4px}
+.pitem{display:flex;gap:12px;width:100%;text-align:left;padding:14px 16px;border:0;border-bottom:1px solid var(--line-2);background:none;cursor:pointer;color:inherit}
+.pitem:hover{background:var(--surface-2)}
+.pitem[aria-current="true"]{background:var(--accent-soft)}
+.tek{--pc:var(--p-tek);--pcs:var(--p-tek-soft)}
+.etw{--pc:var(--p-etw);--pcs:var(--p-etw-soft)}
+.tub{--pc:var(--p-tub);--pcs:var(--p-tub-soft)}
+.pbadge{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;font:600 12px/1 var(--f-mono);background:var(--pcs);color:var(--pc);flex:none}
+.pbadge.sm{width:24px;height:24px;border-radius:6px;font-size:10px}
+.pmain{flex:1;min-width:0;display:grid;gap:5px}
+.pmain b{font-weight:650;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pmain small{color:var(--ink-3);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:500 12px/1 var(--f-mono);color:var(--ink-2)}
+.pstate{font:600 11.5px/1 var(--f-body);padding:4px 8px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.pstate.gonderildi{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.pstate.sonuclandi{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.pbar{height:4px;border-radius:9px;background:var(--line-2);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--pc)}
+.editor{min-width:0}
+.ed-back{display:none}
+.ed-top{padding:22px 26px 22px;display:grid;gap:18px;border-bottom:1px solid var(--line)}
+.ed-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ed-row-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pchip{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px 0 3px;border-radius:999px;background:var(--pcs);color:var(--pc);font:700 12.5px/1 var(--f-body);letter-spacing:.05em}
+.pchip .pbadge{background:var(--surface)}
+.savestate{font:500 12px/1 var(--f-mono);color:var(--ink-3)}
+.savestate.err{color:var(--bad)}
+.ed-title{width:100%;border:0;background:none;resize:none;font:740 30px/1.15 var(--f-display);letter-spacing:-.015em;padding:0;outline:none;overflow:hidden;display:block}
+.ed-title::placeholder{color:var(--ink-3)}
+.ed-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.due-big{display:flex;align-items:center;height:40px;font:600 15px/1 var(--f-mono)}
+.team{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tchip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 4px 0 5px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-size:13.5px;font-weight:500}
+.tchip button{width:24px;height:24px;border-radius:50%;border:0;background:none;cursor:pointer;color:var(--ink-3);display:grid;place-items:center;padding:0}
+.tchip button:hover{background:var(--bad-soft);color:var(--bad)}
+.team-add{height:32px;border:1px dashed var(--ink-3);border-radius:999px;background:var(--surface);padding:0 10px;font-size:13px;color:var(--ink-2);max-width:220px;cursor:pointer}
+.ed-prog{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;padding-top:4px}
+.ed-prog .meter{flex:1 1 140px}
+.ed-prog .meter i{background:var(--pc)}
+.ed-prog > span{font:500 12.5px/1.3 var(--f-mono);color:var(--ink-2)}
+.ed-actions{display:flex;gap:6px;flex-wrap:wrap}
+.secs{list-style:none;margin:0;padding:0}
+.sec{padding:24px 26px;border-top:1px solid var(--line-2)}
+.sec:first-child{border-top:0}
+.sec-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.sec-no{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--pc);color:var(--pc);font:600 12px/23px var(--f-mono);text-align:center;flex:none;margin-top:1px}
+.sec.filled .sec-no{background:var(--pc);color:var(--surface)}
+.sec h3{font-size:17.5px;font-weight:660;line-height:1.3}
+.hint{font-size:13.5px;color:var(--ink-2);margin-top:3px;max-width:72ch}
+.sec-body{padding-left:38px;max-width:880px}
+.sec-text{width:100%;min-height:112px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:12px 14px;font:400 15px/1.65 var(--f-body);resize:vertical;display:block;overflow:hidden}
+.sec-text:focus{outline:none;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+.sec-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap}
+.wc{font:500 12px/1 var(--f-mono);color:var(--ink-3)}
+.ai-box{margin-top:12px;border:1px dashed var(--accent);border-radius:10px;background:var(--accent-soft);padding:12px 14px}
+.ai-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font:600 12.5px/1 var(--f-body);color:var(--accent);margin-bottom:8px}
+.ai-head span{display:inline-flex;align-items:center;gap:6px}
+.ai-text{white-space:pre-wrap;font-size:14.5px;line-height:1.65;color:var(--ink)}
+.ai-text.wait{color:var(--ink-2);font-style:italic}
+.ai-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.home{display:grid;gap:20px}
+.home-head h2{font-size:22px;font-weight:720}
+.prog-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.prog{padding:20px;display:flex;flex-direction:column;gap:10px}
+.prog-top{display:flex;align-items:center;gap:10px}
+.prog h3{font-size:20px;font-weight:740;color:var(--pc)}
+.prog p{font-size:14px;color:var(--ink-2)}
+.prog .secs-list{font-size:12.5px;color:var(--ink-3);line-height:1.55}
+.prog .btn{margin-top:auto;align-self:flex-start}
+.ideas{padding:22px}
+.ideas h2{font-size:19px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ideas h2 .ic{color:var(--accent)}
+.ideas-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end;margin-top:16px}
+.idea-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:16px}
+.idea{border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;background:var(--surface-2)}
+.idea h3{font-size:16px;font-weight:660;line-height:1.3}
+.idea p{font-size:13.5px;color:var(--ink-2)}
+.idea .idea-kat{font:500 12px/1.3 var(--f-mono);color:var(--accent)}
+.idea .idea-why{font-size:13px;color:var(--ink-3)}
+.idea .btn{margin-top:auto;align-self:flex-start}
+.idea-status{margin-top:14px;font-size:14px;color:var(--ink-2);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── Proje sihirbazı ── */
+.wiz{display:flex;border-bottom:1px solid var(--line);overflow:hidden}
+.wiz button{flex:1 1 0;display:flex;align-items:center;gap:10px;padding:14px 16px;border:0;border-right:1px solid var(--line-2);border-bottom:3px solid transparent;background:none;text-align:left;cursor:pointer;color:var(--ink-2);min-width:0}
+.wiz button:last-child{border-right:0}
+.wiz button:hover{background:var(--surface-2);color:var(--ink)}
+.wiz button[aria-current="step"]{color:var(--ink);border-bottom-color:var(--pc)}
+.wn{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;font:600 12.5px/1 var(--f-mono);border:1.5px solid var(--line);color:var(--ink-2)}
+.wiz button[aria-current="step"] .wn{border-color:var(--pc);color:var(--pc)}
+.wiz button.ok .wn{background:var(--pc);border-color:var(--pc);color:var(--surface)}
+.wl{min-width:0}
+.wl b{display:block;font:600 14px/1.25 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wl small{display:block;font:500 11.5px/1.4 var(--f-mono);color:var(--ink-3)}
+.wz{padding:24px 26px;display:grid;gap:24px}
+.wz-sec{display:grid;gap:14px;min-width:0}
+.wz-sec > h3,.sec-head-row h3{font-size:16.5px;font-weight:680}
+.sec-head-row{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.wz-note{font-size:13.5px;line-height:1.55;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:10px 13px;max-width:82ch}
+.help{font-size:12.5px;color:var(--ink-3)}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.wz-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 26px;border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 14px 14px}
+.wz .secs{border:1px solid var(--line);border-radius:12px}
+.wz .sec{padding:22px 22px}
+.sec-ht{flex:1;min-width:0}
+.ed-meta .wide{grid-column:1 / -1}
+.sec-text.short{min-height:46px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.etbl{width:100%;border-collapse:collapse;min-width:640px;font-size:14px}
+.etbl th{font:600 11.5px/1.25 var(--f-body);letter-spacing:.04em;color:var(--ink-3);text-align:left;padding:10px 8px;background:var(--surface-2);border-bottom:1px solid var(--line);vertical-align:bottom}
+.etbl td{padding:6px;border-bottom:1px solid var(--line-2);vertical-align:top}
+.etbl tbody tr:last-child td{border-bottom:0}
+.etbl .inp{height:36px;font-size:14px;padding:0 9px}
+.etbl textarea.inp{min-height:36px;padding:7px 9px;resize:vertical;overflow:hidden}
+.etbl .c-no{width:44px;text-align:center;font:600 13px/1 var(--f-mono);color:var(--ink-3);padding-top:16px}
+.etbl .c-x{width:46px}
+.etbl .c-cap{width:64px;text-align:center}
+.etbl .c-cap input{width:18px;height:18px;margin-top:9px;accent-color:var(--pc)}
+.grid-m th.m{text-align:center;padding:8px 2px;font-size:11px;letter-spacing:0}
+.grid-m td.m{text-align:center;padding:0;width:52px}
+.grid-m td.m label{display:grid;place-items:center;height:48px;cursor:pointer}
+.grid-m td.m label:hover{background:var(--surface-2)}
+.grid-m input[type="checkbox"]{width:18px;height:18px;accent-color:var(--pc);cursor:pointer}
+.row-actions{display:flex;gap:8px 10px;flex-wrap:wrap;align-items:center}
+.swot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.swot .field{padding:12px;border-radius:10px;border:1px solid var(--line)}
+.swot .field > span{font-weight:700;color:var(--ink);font-size:13px}
+.swot .s{background:var(--ok-soft)} .swot .w{background:var(--warn-soft)} .swot .o{background:var(--accent-soft)} .swot .t{background:var(--bad-soft)}
+.ai-bar{align-items:center;gap:10px 14px;flex-wrap:wrap;padding:14px 16px;border:1px dashed var(--accent);border-radius:12px;background:var(--accent-soft)}
+.ai-bar p{flex:1 1 280px;font-size:14px;color:var(--ink)}
+.fill-prog{font:500 12.5px/1.4 var(--f-mono);color:var(--accent)}
+.checks-sum{font-size:14px;color:var(--ink-2)}
+.checks{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.checks li{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;border-top:1px solid var(--line-2);font-size:14px}
+.checks li:first-child{border-top:0}
+.checks small{display:block;color:var(--ink-3);font-size:12.5px;margin-top:2px}
+.ck{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;font:700 12px/1 var(--f-body)}
+.ck.ok{background:var(--ok-soft);color:var(--ok)} .ck.warn{background:var(--warn-soft);color:var(--warn)} .ck.no{background:var(--bad-soft);color:var(--bad)}
+.dl-card{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:18px;border-radius:14px;background:var(--pcs)}
+.doc-big{width:54px;height:66px;border-radius:8px;background:var(--surface);display:grid;place-items:center;align-content:center;gap:2px;color:var(--pc);flex:none}
+.doc-big small{font:700 10px/1 var(--f-mono)}
+.dl-card > div{flex:1 1 220px;min-width:0}
+.dl-card b{display:block;font:700 16px/1.35 var(--f-display);overflow-wrap:anywhere}
+.dl-card > div small{color:var(--ink-2);font-size:13px}
+.btn.big{height:46px;padding:0 20px;font-size:15px}
+.steps-list{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px;color:var(--ink-2)}
+.steps-list b{color:var(--ink)}
+.cols2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.wc.ok{color:var(--ok)}
+.prog-steps{margin:0;padding-left:20px;font-size:13.5px;color:var(--ink-2);display:grid;gap:2px}
+.mp-new{display:flex;gap:8px;flex-wrap:wrap;padding:0 18px 14px}
+.mp-new .btn{flex:1 1 140px;padding-left:4px;justify-content:flex-start}
+.mp-new .btn .pbadge{background:var(--pcs);color:var(--pc)}
+.modal.login{width:min(400px,100%);gap:18px}
+.sync[data-mode="sunucu"] .dot{background:var(--ok)}
+.sync[data-mode="tarayici"] .dot{background:var(--warn)}
+@media (max-width:760px){
+  .wiz button{padding:12px 10px;gap:8px}
+  .wiz button:not([aria-current="step"]){flex:0 0 auto}
+  .wiz button:not([aria-current="step"]) .wl{display:none}
+  .wz,.wz-foot{padding-left:16px;padding-right:16px}
+  .wz .sec{padding:18px 14px}
+}
+@media (max-width:600px){ .swot{grid-template-columns:minmax(0,1fr)} }
+
+/* ── Çekmece, pencere, bildirim ── */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:50;overflow-y:auto;overscroll-behavior:contain;padding:calc(22px + env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) 22px;display:flex;flex-direction:column;gap:22px}
+.dr-head,.m-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.dr-head h2,.m-head h2{font-size:24px;font-weight:730}
+.form{display:grid;gap:14px}
+.row2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:12px}
+.stepper{display:flex;gap:6px;align-items:center}
+.stepper .inp{width:100px;text-align:center;font-family:var(--f-mono)}
+.stepper .icon-btn{border-color:var(--line);font-size:18px;width:40px;height:40px;color:var(--ink)}
+.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.form-err{color:var(--bad);font-size:13.5px;font-weight:500}
+.dr-sec h3{font-size:16px;font-weight:660;margin-bottom:10px}
+.obs-form{display:grid;gap:8px}
+.obs-row{display:flex;gap:8px;align-items:center}
+.obs-row .inp{flex:1}
+.obs-list{list-style:none;margin:14px 0 0;padding:0;display:grid}
+.obs-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 0;border-top:1px solid var(--line-2)}
+.obs-list time{font:500 12px/1.3 var(--f-mono);color:var(--ink-3)}
+.obs-list p{font-size:14.5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.obs-list .icon-btn{grid-row:1 / span 2;grid-column:2;align-self:start}
+.sp-list{display:flex;flex-wrap:wrap;gap:8px}
+.sp-chip{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;font:600 13px/1.2 var(--f-body);color:var(--ink);max-width:100%}
+.sp-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.danger{border-top:1px solid var(--line);padding-top:16px}
+.modal-wrap{position:fixed;inset:0;z-index:60;background:var(--scrim);display:grid;place-items:center;overflow-y:auto;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.modal{width:min(540px,100%);background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:22px;display:grid;gap:16px}
+.modal .sub{margin-top:0}
+.bk-prev{font:500 13px/1.4 var(--f-mono);color:var(--ink-2)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:70;background:var(--ink);color:var(--surface);padding:11px 16px;border-radius:10px;font-weight:600;font-size:14px;box-shadow:var(--shadow);max-width:calc(100% - 32px);text-align:center}
+
+@media (prefers-reduced-motion:no-preference){
+  .drawer{animation:slideIn .22s ease-out}
+  .modal{animation:popIn .18s ease-out}
+  @keyframes slideIn{from{transform:translateX(24px);opacity:.4}to{transform:none;opacity:1}}
+  @keyframes popIn{from{transform:translateY(8px) scale(.98);opacity:.5}to{transform:none;opacity:1}}
+}
+@media (max-width:980px){
+  .panel-grid{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:900px){
+  .atolye{grid-template-columns:minmax(0,1fr)}
+  .plist{position:static;max-height:none}
+  .atolye.has-open .plist{display:none}
+  .ed-back{display:inline-flex}
+}
+@media (max-width:720px){
+  .shead{display:none}
+  .srow{grid-template-columns:auto auto minmax(0,1fr) auto;grid-template-areas:"n n n st" "c a a a" "l l l l";row-gap:6px;column-gap:10px}
+  .s-name{grid-area:n} .s-state{grid-area:st} .s-class{grid-area:c;padding-left:45px} .s-abs{grid-area:a} .s-last{grid-area:l;padding-left:45px}
+  .s-abs .ml{display:inline}
+  .view-head h1{font-size:27px}
+  .ed-title{font-size:25px}
+}
+@media (max-width:600px){
+  .card-head,.toolbar{padding-left:16px;padding-right:16px}
+  .banner{margin-left:16px;margin-right:16px}
+  .shead,.srow{padding-left:16px;padding-right:16px}
+  .ed-top,.sec{padding-left:16px;padding-right:16px}
+  .sec-body{padding-left:0}
+  .row2{grid-template-columns:minmax(0,1fr)}
+  .brand-name{font-size:20px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">BT</span>
+      <div>
+        <span class="brand-name">Burak TURGUT</span>
+        <span class="brand-sub">OKUL TAKİP SİSTEMİ</span>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span class="chip" id="weekChip">2026–2027</span>
+      <span class="chip sync" id="syncChip" data-mode="loading"><i class="dot"></i><span>Bağlanıyor…</span></span>
+    </div>
+  </div>
+  <nav class="wrap tabs" role="tablist" aria-label="Bölümler">
+    <button class="tab" role="tab" id="tab-panel" data-act="view" data-v="panel" aria-selected="true">Panel</button>
+    <button class="tab" role="tab" id="tab-planlar" data-act="view" data-v="planlar" aria-selected="false">Yıllık Planlarım</button>
+    <button class="tab" role="tab" id="tab-atolye" data-act="view" data-v="atolye" aria-selected="false">Proje Atölyesi</button>
+  </nav>
+</header>
+<div class="localnote" id="localNote" hidden><div class="wrap">Bu görünümde kayıt yapılamıyor: eklediğiniz bilgiler sayfa kapanınca silinir. Kalıcı kayıt için sayfayı Claude üzerinden açın.</div></div>
+
+<main class="wrap">
+  <!-- PANEL -->
+  <section class="view" id="view-panel" role="tabpanel" aria-labelledby="tab-panel">
+    <div class="panel-grid">
+      <section class="card students" aria-labelledby="h-students">
+        <div class="card-head">
+          <div>
+            <h2 id="h-students">Öğrencilerim</h2>
+            <p class="sub" id="studentSummary">Kayıtlar yükleniyor…</p>
+            <div class="stat-row" id="statRow"></div>
+          </div>
+          <div class="head-actions">
+            <span id="notlarSlot"></span>
+            <button class="btn" type="button" data-act="student-bulk">Liste yapıştır</button>
+            <button class="btn primary" type="button" data-act="student-new"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Öğrenci ekle</button>
+          </div>
+        </div>
+        <div class="banner" id="studentBanner" hidden>
+          <span>Örnek öğrenciler gösteriliyor. Kendi öğrencilerinizi ekledikten sonra silebilirsiniz.</span>
+          <button class="btn sm" type="button" data-act="del-ex" data-col="ogrenciler">Örnekleri sil</button>
+        </div>
+        <div class="toolbar" id="studentToolbar" hidden>
+          <label class="search" for="studentSearch">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+            <input id="studentSearch" type="search" placeholder="Ad, numara veya gözlem notu ara" autocomplete="off">
+          </label>
+          <div class="cchips" id="classChips" role="group" aria-label="Sınıf filtresi"></div>
+        </div>
+        <div id="studentRows"></div>
+      </section>
+
+      <aside class="side">
+        <section class="card files" aria-labelledby="h-files">
+          <div class="card-head">
+            <div><h2 id="h-files">Dosyalarım</h2><p class="sub">Google Drive</p></div>
+            <button class="icon-btn" type="button" data-act="link-add" data-bolum="dosyalar" aria-label="Dosya bağlantısı ekle"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+          <div class="files-body" id="filesBody"></div>
+        </section>
+        <section class="card" aria-labelledby="h-cal">
+          <div class="card-head"><div><h2 id="h-cal">Bu hafta</h2><p class="sub" id="calToday"></p></div></div>
+          <div class="cal-body" id="calBody"></div>
+        </section>
+        <section class="card" aria-labelledby="h-mp">
+          <div class="card-head">
+            <div><h2 id="h-mp">Projelerim</h2><p class="sub">Yaklaşan başvurular</p></div>
+            <button class="link-btn" type="button" data-act="view" data-v="atolye">Atölyeye git →</button>
+          </div>
+          <div id="miniProjects"></div>
+        </section>
+      </aside>
+    </div>
+  </section>
+
+  <!-- YILLIK PLANLAR -->
+  <section class="view" id="view-planlar" role="tabpanel" aria-labelledby="tab-planlar" hidden>
+    <div class="view-head">
+      <div><h1>Yıllık Planlarım</h1><p class="sub">Drive'daki yıllık plan dosyalarınız ve 2026–2027 ders haftaları</p></div>
+      <button class="btn primary" type="button" data-act="link-add" data-bolum="planlar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Plan bağlantısı ekle</button>
+    </div>
+    <section class="card year" aria-labelledby="h-year">
+      <div class="year-top" id="yearTop"></div>
+      <div class="tl-scroll"><div class="tl" id="timeline" role="img"></div></div>
+      <div class="legend">
+        <span><i style="background:var(--accent-soft)"></i>Geçen hafta</span>
+        <span><i style="background:var(--accent)"></i>Bu hafta</span>
+        <span><i style="background:var(--line-2)"></i>Gelecek hafta</span>
+        <span><i style="background:repeating-linear-gradient(135deg,var(--warn-soft) 0 3px,transparent 3px 6px);box-shadow:inset 0 0 0 1px var(--warn-soft)"></i>Tatil</span>
+        <span class="src">Tarihler MEB 2026–2027 çalışma takvimine göredir.</span>
+      </div>
+    </section>
+    <div class="plan-grid" id="planGrid"></div>
+  </section>
+
+  <!-- PROJE ATÖLYESİ -->
+  <section class="view" id="view-atolye" role="tabpanel" aria-labelledby="tab-atolye" hidden>
+    <div class="view-head">
+      <div><h1>Proje Atölyesi</h1><p class="sub">TEKNOFEST ve TÜBİTAK projelerinizi adım adım hazırlayın; şablona uygun Word dosyası olarak indirin</p></div>
+    </div>
+    <div class="atolye" id="atolye">
+      <aside class="card plist" aria-labelledby="h-plist">
+        <div class="plist-head"><h2 id="h-plist">Projeler</h2><button class="btn primary sm" type="button" data-act="project-home">+ Yeni proje</button></div>
+        <div class="pfilter" id="programFilter" role="group" aria-label="Program filtresi"></div>
+        <div class="plist-body" id="projectList"></div>
+      </aside>
+      <section class="editor" id="editor" aria-live="polite"></section>
+    </div>
+  </section>
+</main>
+
+<datalist id="dl-sinif"></datalist>
+<datalist id="dl-kat-teknofest"></datalist>
+
+<div class="scrim" id="scrim" hidden data-act="close"></div>
+<aside class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-labelledby="drawerTitle"></aside>
+<div class="modal-wrap" id="modal" hidden><div class="modal" id="modalBox" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+document.documentElement.lang = 'tr';
+(function () {
+'use strict';
+
+/* ── Yardımcılar ── */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const TR = 'tr-TR';
+const DAY = 864e5;
+const pd = s => { const [y, m, d] = String(s).split('-').map(Number); return new Date(y, m - 1, d); };
+const today0 = () => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); };
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const monday = d => addDays(d, -((d.getDay() + 6) % 7));
+const diffDays = (a, b) => Math.round((b - a) / DAY);
+const iso = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+const fLong = d => d.toLocaleDateString(TR, { day: 'numeric', month: 'long', year: 'numeric' });
+const fShort = d => d.toLocaleDateString(TR, { day: 'numeric', month: 'short' });
+const monthName = d => d.toLocaleDateString(TR, { month: 'long' });
+const fRange = (b, e) => b.getMonth() === e.getMonth() ? `${b.getDate()}–${e.getDate()} ${monthName(e)}` : `${b.getDate()} ${monthName(b)} – ${e.getDate()} ${monthName(e)}`;
+const wordsOf = t => { t = String(t || '').trim(); return t ? t.split(/\s+/).length : 0; };
+const nf = n => Number(n).toLocaleString(TR);
+const lower = s => String(s || '').toLocaleLowerCase(TR);
+const upper = s => String(s || '').toLocaleUpperCase(TR);
+const initials = name => { const w = String(name || '').trim().split(/\s+/).filter(Boolean); if (!w.length) return '?'; return upper(w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')); };
+const hostOf = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+const slug = s => lower(s).replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ş/g, 's').replace(/ü/g, 'u').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'proje';
+const rid = () => Math.random().toString(36).slice(2, 10);
+
+const ICONS = {
+  ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+  doc: '<path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  spark: '<path d="M12 3c.4 3.6 2.4 5.6 6 6-3.6.4-5.6 2.4-6 6-.4-3.6-2.4-5.6-6-6 3.6-.4 5.6-2.4 6-6z"/><path d="M19 15c.2 1.6 1 2.4 2.5 2.5-1.5.2-2.3 1-2.5 2.5-.2-1.5-1-2.3-2.5-2.5 1.5-.1 2.3-.9 2.5-2.5z"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  down: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  back: '<path d="M15 6l-6 6 6 6"/>',
+  note: '<path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h3"/>',
+  caret: '<path d="m7 10 5 5 5-5"/>',
+  users: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3 2.8-4.6 5.5-4.6s4.9 1.6 5.5 4.6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.6c2.3.1 4 1.5 4.5 4.4"/>'
+};
+const ic = (n, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+
+/* ── Sabit içerik ── */
+const DURUM = { iyi: 'İyi', takip: 'Takipte', dikkat: 'Dikkat' };
+const DURUM_FORM = ['iyi', 'takip', 'dikkat'];
+const DURUM_SUM = ['dikkat', 'takip', 'iyi'];
+const PDURUM = [['fikir', 'Fikir'], ['yaziliyor', 'Yazılıyor'], ['gonderildi', 'Gönderildi'], ['sonuclandi', 'Sonuçlandı']];
+const PDURUM_AD = Object.fromEntries(PDURUM);
+const BOLUM = {
+  notlar: { ad: 'Notlar', varsayilan: 'Not çizelgesi', ornek: 'ör. 2026–2027 Not Çizelgesi', acik: 'ör. Google E-Tablolar' },
+  dosyalar: { ad: 'Dosyalarım', varsayilan: 'Drive klasörüm', ornek: 'ör. Okul Dosyalarım', acik: 'ör. Zümre, sınav ve evrak klasörü' },
+  planlar: { ad: 'Yıllık Planlarım', varsayilan: 'Yıllık plan', ornek: 'ör. 9. Sınıf Fizik Yıllık Planı', acik: 'ör. 9-A, 9-B · haftada 2 saat' }
+};
+
+/* PROGRAMLAR-BASLA */
+const AYLAR = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+// 2204-B Ortaokul Öğrencileri Araştırma Projeleri Yarışması Proje Rehberi 2027, Tablo 1 ve Tablo 2
+const ANA_ALANLAR = ['Biyoloji', 'Coğrafya', 'Değerler Eğitimi', 'Fizik', 'Kimya', 'Matematik', 'Tarih', 'Teknolojik Tasarım', 'Türkçe', 'Yazılım'];
+const TEMATIK_ALANLAR = ['Aile İçi İletişim', 'Akıllı Ulaşım Sistemleri', 'Algoritma Tasarımı ve Uygulamaları', 'Artırılmış, Sanal ve Karma Gerçeklik', 'Astronomi ve Astrofizik', 'Bağımlılık ve Bağımlılıkla Mücadele', 'Bilgisayarsız Kodlama', 'Bilim İletişimi', 'Bilim Tarihi ve Felsefesi', 'Biyoçeşitlilik', 'Biyomedikal Cihaz Teknolojileri', 'Biyotaklit', 'Blokzincir', 'Büyük Veri ve Bulut Bilişim', 'Çevre ve Çevreyi Koruma', 'Çip Teknolojileri', 'Değerler Eğitimi', 'Dijital İkiz', 'Dijital Oyun Tasarımı', 'Dil ve Edebiyat', 'Doğal Afetler ve Afet Yönetimi', 'Doğal Miras ve Doğal Kaynaklar', 'Ekolojik Denge', 'Ekolojik Okuryazarlık', 'E-Öğrenme', 'Erişilebilir Yaşam Teknolojileri', 'Finansal Okuryazarlık', 'Genetik ve Biyoteknoloji', 'Gıda ve Gıda Arzı Güvenliği', 'Giyilebilir Teknolojiler', 'Göç ve Uyum', 'Görsel ve İşitsel Sanatlar', 'Havacılık ve Uzay Bilimleri', 'Hidrojen Enerjisi', 'İnsan Hakları ve Demokrasi', 'Jeotermal Enerji', 'Karbon Ayak İzi', 'Kuantum Teknolojileri', 'Kutup Keşfi ve Araştırmaları', 'Küresel Isınma ve İklim Değişikliği', 'Makine Öğrenmesi', 'Malzeme Bilimi ve Nanoteknoloji', 'Medya Okuryazarlığı', 'Milli Teknoloji Hamlesi', 'Nörobilim ve Nöroteknoloji', 'Nükleer Enerji', 'Okul Dışı Öğrenme Ortamları', 'Orman ve Ormanları Koruma', 'Oyun ve Oyunlaştırma', 'Robotik ve Kodlama', 'Sağlıklı Beslenme', 'Sağlıklı Yaşam ve Spor', 'Salgın Hastalıklar ve Salgınla Mücadele', 'Sıfır Atık ve Geri Dönüşüm', 'Siber Güvenlik', 'Siber Psikoloji', 'Somut Kültürel Miras', 'Somut Olmayan Kültürel Miras', 'Sorumlu Üretim ve Tüketim', 'STEAM (Fen, Teknoloji, Mühendislik, Sanat ve Matematik)', 'Sürdürülebilir Şehirler ve Toplumlar', 'Tarım ve Hayvancılık Teknolojileri', 'Yabancı Dil Eğitimi', 'Yapay Zekâ', 'Yenilenebilir Enerji', 'Yer ve Deniz Bilimleri', 'Yoksullukla Mücadele'];
+const COZUM_TURU = ['Donanım', 'Yazılım', 'Hibrit (donanım + yazılım)'];
+const PROTOTIP_DURUM = ['Fikir aşamasında', 'Tasarım aşamasında', 'Prototip geliştiriliyor', 'Prototip tamamlandı, testler sürüyor', 'Prototip tamamlandı ve test edildi'];
+const DESENLER = ['Deneysel çalışma', 'Betimsel çalışma (anket, gözlem)', 'Saha çalışması', 'Teknolojik tasarım (mühendislik tasarım süreci)', 'Yazılım geliştirme', 'Karma yöntem'];
+
+// Bölüm: k anahtar, ad başlık, ipucu şablondaki açıklama, sinir sayfa sınırı, kelime önerilen uzunluk,
+// kural Claude için ek kural, ai:false Claude kapalı, tip tablo türü, aralik kelime aralığı
+const PROGRAMS = {
+  teknofest: {
+    ad: 'TEKNOFEST', kisa: 'TF', cls: 'tek',
+    ozet: 'Teknoloji yarışmaları için proje sunum dosyası: takım tanıtımı, problem, çözüm, yöntem, prototip durumu, SWOT ve proje takvimi.',
+    kaynak: 'Proje sunum şablonu (Eğitim Teknolojileri) · TEKNOFEST 2026 başvuru kılavuzu',
+    adimlar: ['Yarışma ve takım', 'Proje bilgileri', 'Proje metni', 'Word dosyası'],
+    kategoriler: ['Eğitim Teknolojileri', 'İnsanlık Yararına Teknoloji', 'Akıllı Ulaşım', 'Tarım Teknolojileri', 'Engelsiz Yaşam Teknolojileri', 'Afet Yönetimi Teknolojileri', 'Biyoteknoloji İnovasyon', 'Çevre ve Enerji Teknolojileri'],
+    seviyeler: ['İlkokul', 'Ortaokul', 'Lise', 'Üniversite'],
+    bolumler: [
+      { k: 'ozet', ad: 'Özet', sinir: 'En fazla 1 sayfa', kelime: 220, ipucu: 'Proje fikrini kısa ve net özetleyin: konu, bu projenin neden seçildiği, amaç ve kullanılan yöntem. Projenin başvurulan kategorinin şartnamesindeki konu kapsamına uygunluğunu belirtin.' },
+      { k: 'problem', ad: 'Problem Tanımı', sinir: 'En fazla 2 sayfa', kelime: 350, ipucu: 'Mevcut durumu ve karşılaşılan problemleri literatür taramasıyla destekleyerek açıklayın; konuda daha önce yapılmış çalışmalardan bahsedin.', kural: 'Var olmayan çalışma, yazar veya yayın adı verme; atıf gereken yerleri [kaynak eklenecek] olarak işaretle.' },
+      { k: 'cozum', ad: 'Çözüm', sinir: 'En fazla 2 sayfa', kelime: 350, ipucu: 'Çözüm fikrini problemle uyumlu, kapsamlı, yenilikçi ve etkili biçimde anlatın; literatürdeki çözümlerden farkını ve varsa toplumsal faydasını belirtin.' },
+      { k: 'yontem', ad: 'Yöntem', sinir: 'En fazla 2 sayfa', kelime: 350, ipucu: 'Seçilen yöntemi; izlenecek metot ve deneyleri, kullanılacak teknolojileri, analizleri ve malzemeleri açıklayın.' },
+      { k: 'prototip', ad: 'Prototip / Uygulama Geliştirme Durumu', sinir: 'En fazla 1 sayfa', kelime: 230, ipucu: 'Prototip olup olmadığını; çözümün donanım, yazılım ya da hibrit olduğunu; malzeme, yazılım ve bileşenleri maddeler hâlinde; tasarım, üretim, kodlama ve test aşamalarından hangilerinin tamamlandığını yazın.', kural: 'Teknik bileşenleri "- " ile başlayan maddeler hâlinde listele. Tamamlanmamış aşamaları dürüstçe belirt; prototip durumunu proje bilgilerindeki gibi yaz.' },
+      { k: 'ticari', ad: 'Ticarileşme Potansiyeli ve Sürdürülebilirlik', sinir: 'En fazla 1 sayfa', kelime: 230, ipucu: 'Ticarileşme potansiyelini, katma değeri, mevcut şartlarda üretilebilirliği, iş birliği olanaklarını ve projenin uzun vadede nasıl sürdürüleceğini açıklayın.', kural: 'Pazar büyüklüğü, fiyat veya satış rakamı uydurma; gerekirse [veri eklenecek] yaz.' },
+      { k: 'ozgunluk', ad: 'Özgünlük ve Yerlilik Yönü', sinir: 'En fazla 1 sayfa', kelime: 220, ipucu: 'Projenin milli ve yerli unsurlarını; piyasadaki benzer çözümlerden ayıran özellikleri karşılaştırma yaparak anlatın.', kural: 'Ürün veya firma adı uydurma; karşılaştırmayı genel çözüm türleri üzerinden yap.' },
+      { k: 'hedef', ad: 'Hedef Kitle', sinir: 'En fazla 1 sayfa', kelime: 180, ipucu: 'Projeye ve yarışma kategorisine uygun, özelleştirilmiş hedef kitleyi tanımlayın. "Herkes", "tüm insanlık" gibi genel ifadeler kullanmayın.' },
+      { k: 'takvim', ad: 'Proje Takvimi', tip: 'isPaketleri', sinir: 'En fazla 1 sayfa', ipucu: 'İş paketlerini alt faaliyetleriyle birlikte, açık ve gerçekçi başlangıç ve bitiş tarihleriyle yazın.' },
+      { k: 'swot', ad: 'SWOT Analizi', tip: 'swot', sinir: 'En fazla 1 sayfa', ipucu: 'Projenin güçlü ve zayıf yönleri ile fırsatları ve tehditleri.' }
+    ]
+  },
+  tubitak: {
+    ad: 'TÜBİTAK', kisa: 'TB', cls: 'tub',
+    ozet: '2204 araştırma projeleri için bilimsel yöntemle proje raporu: özet, amaç, giriş, yöntem, iş-zaman çizelgesi, bulgular ve sonuç.',
+    kaynak: 'Proje yazma şablonu 2026–2027 · 2204-B Proje Rehberi 2027',
+    adimlar: ['Proje künyesi', 'Araştırma planı', 'Rapor metni', 'Word dosyası'],
+    alt: ['2204-B Ortaokul Öğrencileri Araştırma Projeleri', '2204-A Lise Öğrencileri Araştırma Projeleri'],
+    bolumler: [
+      { k: 'ozet', ad: 'Özet', kelime: 200, aralik: [150, 250], ipucu: 'Projenin amacı, kullanılan yöntem, yapılan gözlem ve temel bulgular ile sonuçlardan birkaç cümleyle bahsedin. Ayrıntılara, yorumlara ve kaynaklara yer vermeyin.', kural: 'Özet 150–250 kelime arasında olsun. Henüz bulgu yoksa beklenen sonucu "beklenmektedir" diliyle yaz; sayı uydurma.' },
+      { k: 'anahtar', ad: 'Anahtar Kelimeler', kelime: 5, sayac: true, ipucu: 'Proje konusunu genel olarak yansıtan en fazla beş anahtar kelime; özetin altında yer alır.', kural: 'En fazla 5 anahtar kelimeyi virgülle ayırarak yaz; başka hiçbir şey yazma.' },
+      { k: 'amac', ad: 'Amaç', kelime: 150, ipucu: 'Projenin amacına, somut hedeflerine ve Ar-Ge içeriğine odaklanın; hangi eksikliği nasıl gidereceğini ya da hangi soruna çözüm getireceğini açıklayın. Genel konu ve tarihçe anlatımından kaçının.' },
+      { k: 'giris', ad: 'Giriş', kelime: 350, ipucu: 'Konuyla ilgili yapılmış araştırmaları ve cevapsız soruları kaynaklara dayanarak anlatın; çalışmanın benzerlerinden farkını belirtin. Bölümün sonunda araştırma sorusunu ve hipotezi kısaca yazın.', kural: 'Var olmayan çalışma, yazar veya yayın adı verme; atıf gereken yerlere [kaynak eklenecek] yaz. Bölümü araştırma sorusu ve hipotezle bitir.' },
+      { k: 'yontem', ad: 'Yöntem', kelime: 400, ipucu: 'Araştırma deseni; çalışma grubu, örneklem ya da saha; veri toplama araçları; deney düzeneği ve malzemeler (ölçüm aralığı, boyut gibi ayrıntılarla); deneylerin nerede, ne kadar sürede, kaç tekrarla yapıldığı ve verilerin nasıl analiz edildiği.', kural: 'Bu alt başlıkları ayrı paragraflarda ele al. Ölçüm değeri uydurma; bilinmeyen ayrıntıları [ölçü eklenecek] gibi işaretle.' },
+      { k: 'cizelge', ad: 'Proje İş-Zaman Çizelgesi', tip: 'cizelge', ipucu: 'Araştırmanın süresi boyunca ulaşılacak hedefleri ve zamanlarını aylara göre işaretleyin.' },
+      { k: 'bulgular', ad: 'Bulgular', kelime: 200, ipucu: 'Toplanan verileri ve analiz sonuçlarını yorum yapmadan, tablo ve şekillere numara vererek sunun ("Tablo 1\'de görüldüğü gibi…").', kural: 'Bulgu veya sayı uydurma. Mevcut metin yoksa yalnızca bulguların hangi tablo ve şekillerle raporlanacağını gösteren, değerleri [veri eklenecek] olarak bırakılmış bir şablon yaz.' },
+      { k: 'sonuc', ad: 'Sonuç ve Tartışma', kelime: 250, ipucu: 'Bulguları araştırma sorusuna göre yorumlayın; benzer çalışmalarla karşılaştırın; sonuçları olumsuz etkileyen etkenleri açıklayın.', kural: 'Bulgular bölümünde olmayan bir sonucu yazma; bulgu yoksa yer tutucu kullan.' },
+      { k: 'oneriler', ad: 'Öneriler', kelime: 120, ipucu: 'Benzer çalışma yapacaklara yol gösterecek önerileriniz.' },
+      { k: 'kaynaklar', ad: 'Kaynaklar', ai: false, ipucu: 'Raporda atıf yapılan tüm kaynakları APA kurallarına göre, her satıra bir kaynak olacak şekilde yazın.' },
+      { k: 'ekler', ad: 'Ekler', ai: false, ipucu: 'Varsa uzun tablolar, ayrıntılı deney verileri, anketler, izin yazıları. Her ek ayrı sayfada "Ek 1., Ek 2." şeklinde yer alır; 20 sayfaya sığmayan ekler başvuru sistemindeki EK BELGELER kısmına yüklenir.' }
+    ]
+  }
+};
+const PROG_KEYS = Object.keys(PROGRAMS);
+/* PROGRAMLAR-BITTI */
+
+/* DOCX-BASLA */
+// Word (.docx) paketi: şablonlardaki başlık sırası ve biçimiyle; tarayıcıda JSZip ile sıkıştırılır.
+const DOCX = (function () {
+  const AY = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+  const AYK = ['OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ', 'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA'];
+  const RED = 'C00000';
+  const HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+  const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const x = s => String(s == null ? '' : s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const up = s => String(s || '').toLocaleUpperCase('tr-TR');
+  const has = v => !!String(v == null ? '' : v).trim();
+  const ym = v => { const [y, m] = String(v || '').split('-').map(Number); return y && m ? AY[m - 1] + ' ' + y : ''; };
+  const addM = (v, n) => { const [y, m] = String(v).split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+  const lines = t => String(t == null ? '' : t).replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+  const BUL = /^[-•*]\s+(.*)$/;
+
+  function rpr(o) {
+    let s = '';
+    if (o.b) s += '<w:b/><w:bCs/>';
+    if (o.i) s += '<w:i/><w:iCs/>';
+    if (o.color) s += `<w:color w:val="${o.color}"/>`;
+    if (o.sz) s += `<w:sz w:val="${o.sz}"/><w:szCs w:val="${o.sz}"/>`;
+    return s ? `<w:rPr>${s}</w:rPr>` : '';
+  }
+  function r(t, o) {
+    o = o || {};
+    const parts = String(t == null ? '' : t).split('\t');
+    return `<w:r>${rpr(o)}${parts.map((s, i) => (i ? '<w:tab/>' : '') + (s ? `<w:t xml:space="preserve">${x(s)}</w:t>` : '')).join('')}</w:r>`;
+  }
+  // Köşeli parantezli yer tutucular kırmızı yazılır: öğretmen doldurması gereken yerleri görür.
+  function rich(t, o) {
+    o = o || {};
+    return String(t == null ? '' : t).split(/(\[[^\]\n]{1,120}\])/).filter(s => s !== '')
+      .map(s => /^\[[^\]]*\]$/.test(s) ? r(s, Object.assign({}, o, { color: RED })) : r(s, o)).join('');
+  }
+  function p(runs, o) {
+    o = o || {};
+    let s = '';
+    if (o.style) s += `<w:pStyle w:val="${o.style}"/>`;
+    if (o.keepNext) s += '<w:keepNext/>';
+    if (o.pageBreak) s += '<w:pageBreakBefore/>';
+    // Başlık stilinin aralıkları geçerli kalsın: stil verilmiş ve aralık istenmemişse yazılmaz
+    if (!o.style || o.before != null || o.after != null) s += `<w:spacing w:before="${o.before || 0}" w:after="${o.after == null ? 120 : o.after}"/>`;
+    if (o.ind) s += o.ind;
+    if (o.jc) s += `<w:jc w:val="${o.jc}"/>`;
+    return `<w:p><w:pPr>${s}</w:pPr>${runs || ''}</w:p>`;
+  }
+  function text(t, o) {
+    o = o || {};
+    const ls = lines(t);
+    if (!ls.length) return p(r(o.empty || '[Bu bölüm henüz yazılmadı]', { color: RED, i: true }), { jc: 'left', after: o.after });
+    return ls.map(l => {
+      const m = l.match(BUL);
+      if (m) return p(r('•\t') + rich(m[1]), { ind: '<w:ind w:left="567" w:hanging="283"/>', jc: o.jc || 'both', after: 60 });
+      return p(rich(l), { ind: o.firstLine ? `<w:ind w:firstLine="${o.firstLine}"/>` : '', jc: o.jc || 'both', after: o.after });
+    }).join('');
+  }
+  function tc(inner, w, o) {
+    o = o || {};
+    let s = `<w:tcW w:w="${w}" w:type="dxa"/>`;
+    if (o.span) s += `<w:gridSpan w:val="${o.span}"/>`;
+    if (o.vMerge) s += o.vMerge === 'restart' ? '<w:vMerge w:val="restart"/>' : '<w:vMerge/>';
+    if (o.fill) s += `<w:shd w:val="clear" w:color="auto" w:fill="${o.fill}"/>`;
+    s += `<w:vAlign w:val="${o.vAlign || 'top'}"/>`;
+    return `<w:tc><w:tcPr>${s}</w:tcPr>${inner || p('', { after: 0 })}</w:tc>`;
+  }
+  function cellText(t, o) {
+    o = o || {};
+    const ls = lines(t);
+    if (!ls.length) return p(o.ph ? r(o.ph, { color: RED, sz: o.sz }) : '', { after: 0, jc: o.jc });
+    return ls.map((l, i) => {
+      const m = l.match(BUL);
+      if (m) return p(r('•\t', { sz: o.sz }) + rich(m[1], { sz: o.sz }), { ind: '<w:ind w:left="284" w:hanging="284"/>', after: i === ls.length - 1 ? 0 : 40, jc: 'left' });
+      return p(rich(l, { sz: o.sz, b: o.b }), { after: i === ls.length - 1 ? 0 : 40, jc: o.jc || 'left' });
+    }).join('');
+  }
+  const trow = (cells, o) => `<w:tr>${o && (o.header || o.cant) ? `<w:trPr>${o.cant ? '<w:cantSplit/>' : ''}${o.header ? '<w:tblHeader/>' : ''}</w:trPr>` : ''}${cells.join('')}</w:tr>`;
+  function table(widths, rows) {
+    const total = widths.reduce((a, b) => a + b, 0);
+    const bd = ['top', 'left', 'bottom', 'right', 'insideH', 'insideV'].map(s => `<w:${s} w:val="single" w:sz="4" w:space="0" w:color="8C8C8C"/>`).join('');
+    return `<w:tbl><w:tblPr><w:tblW w:w="${total}" w:type="dxa"/><w:tblBorders>${bd}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="60" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="60" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join('')}</w:tblGrid>${rows.join('')}</w:tbl>${p('', { after: 120 })}`;
+  }
+  const PAGE = sz => ['<w:fldChar w:fldCharType="begin"/>', '<w:instrText xml:space="preserve"> PAGE </w:instrText>', '<w:fldChar w:fldCharType="separate"/>', '<w:t>1</w:t>', '<w:fldChar w:fldCharType="end"/>'].map(c => `<w:r>${rpr({ sz })}${c}</w:r>`).join('');
+
+  function pack(o) {
+    const tw = 11906 - 2 * o.margin;
+    const heading = (id, name, lvl, h) => `<w:style w:type="paragraph" w:styleId="${id}"><w:name w:val="${name}"/><w:basedOn w:val="Normal"/><w:next w:val="Normal"/><w:uiPriority w:val="9"/><w:qFormat/><w:pPr><w:keepNext/><w:keepLines/>${h.border ? `<w:pBdr><w:bottom w:val="single" w:sz="8" w:space="4" w:color="${h.border}"/></w:pBdr>` : ''}<w:spacing w:before="${h.before}" w:after="${h.after}"/><w:outlineLvl w:val="${lvl}"/></w:pPr><w:rPr><w:b/><w:bCs/><w:color w:val="${h.color}"/><w:sz w:val="${h.sz}"/><w:szCs w:val="${h.sz}"/></w:rPr></w:style>`;
+    const styles = `${HEAD}<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${o.font}" w:eastAsia="${o.font}" w:hAnsi="${o.font}" w:cs="${o.font}"/><w:sz w:val="${o.size}"/><w:szCs w:val="${o.size}"/><w:lang w:val="tr-TR" w:eastAsia="tr-TR" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>${heading('Heading1', 'heading 1', 0, o.h1)}<w:style w:type="paragraph" w:styleId="Footer"><w:name w:val="footer"/><w:basedOn w:val="Normal"/><w:uiPriority w:val="99"/><w:unhideWhenUsed/><w:pPr><w:tabs><w:tab w:val="right" w:pos="${tw}"/></w:tabs><w:spacing w:after="0"/></w:pPr><w:rPr><w:sz w:val="${o.footSz}"/><w:szCs w:val="${o.footSz}"/></w:rPr></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
+    const doc = `${HEAD}<w:document ${NS}><w:body>${o.body}<w:sectPr><w:footerReference w:type="default" r:id="rId3"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="${o.margin}" w:right="${o.margin}" w:bottom="${o.margin}" w:left="${o.margin}" w:header="708" w:footer="567" w:gutter="0"/><w:cols w:space="708"/>${o.titlePg ? '<w:titlePg/>' : ''}<w:docGrid w:linePitch="360"/></w:sectPr></w:body></w:document>`;
+    const now = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+    const rel = (id, type, target) => `<Relationship Id="${id}" Type="${type}" Target="${target}"/>`;
+    const OD = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
+    return {
+      '[Content_Types].xml': `${HEAD}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`,
+      '_rels/.rels': `${HEAD}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rel('rId1', OD + 'officeDocument', 'word/document.xml')}${rel('rId2', 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties', 'docProps/core.xml')}${rel('rId3', OD + 'extended-properties', 'docProps/app.xml')}</Relationships>`,
+      'word/_rels/document.xml.rels': `${HEAD}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rel('rId1', OD + 'styles', 'styles.xml')}${rel('rId2', OD + 'settings', 'settings.xml')}${rel('rId3', OD + 'footer', 'footer1.xml')}</Relationships>`,
+      'word/document.xml': doc,
+      'word/styles.xml': styles,
+      'word/settings.xml': `${HEAD}<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:zoom w:percent="100"/><w:defaultTabStop w:val="708"/><w:characterSpacingControl w:val="doNotCompress"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>`,
+      'word/footer1.xml': `${HEAD}<w:ftr ${NS}>${o.footer}</w:ftr>`,
+      'docProps/core.xml': `${HEAD}<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${x(o.title)}</dc:title><dc:creator>${x(o.author)}</dc:creator><cp:lastModifiedBy>${x(o.author)}</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified></cp:coreProperties>`,
+      'docProps/app.xml': `${HEAD}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Burak TURGUT Okul Takip Sistemi</Application></Properties>`
+    };
+  }
+
+  // TEKNOFEST proje sunum şablonu: kapak, takım tanıtımı, bölümler ayrı sayfalarda, teşekkürler
+  function teknofest(pj, prog) {
+    const M = 1134, TW = 11906 - 2 * M, NAVY = '1F3864', ORANGE = 'C55A11', LIGHT = 'DEE5F1';
+    const B = [];
+    const val = (v, o) => has(v) ? r(String(v).trim(), o) : r('[eklenecek]', Object.assign({}, o, { color: RED }));
+    const kat = String(pj.kategori || '').trim();
+    B.push(p(r('TEKNOFEST 2026', { b: true, color: ORANGE, sz: 28 }), { jc: 'center', before: 1400, after: 160 }));
+    B.push(p(r(up(kat ? kat + ' Yarışması' : 'Teknoloji Yarışmaları'), { b: true, color: NAVY, sz: 40 }), { jc: 'center', after: 120 }));
+    B.push(p(r('PROJE SUNUMU', { b: true, color: NAVY, sz: 28 }), { jc: 'center', after: 900 }));
+    const kw = [3000, TW - 3000];
+    B.push(table(kw, [['PROJE ADI', pj.baslik], ['TAKIM EĞİTİM SEVİYESİ', pj.seviye], ['KONUSU', pj.konu], ['TAKIM ADI', pj.takimAdi], ['TAKIM ID', pj.takimId], ['BAŞVURU ID', pj.basvuruId]]
+      .map(([l, v]) => trow([tc(p(r(l, { b: true, color: NAVY }), { after: 0 }), kw[0], { fill: LIGHT, vAlign: 'center' }), tc(p(val(v), { after: 0 }), kw[1], { vAlign: 'center' })], { cant: true }))));
+    if (has(pj.okul)) B.push(p(r(String(pj.okul).trim(), { b: true, sz: 24 }), { jc: 'center', before: 480 }));
+
+    B.push(p(r('TAKIM TANITIMI'), { style: 'Heading1', pageBreak: true }));
+    const uy = (pj.uyeler || []).filter(u => has(u.ad));
+    const kap = uy.find(u => u.kaptan);
+    const w4 = [2100, 2700, 2419, 2419];
+    const rows = [trow(['ROL', 'AD SOYAD', 'TAKIMDAKİ GÖREVİ', 'EĞİTİM BİLGİSİ'].map((h, i) => tc(p(r(h, { b: true, color: NAVY, sz: 19 }), { after: 0 }), w4[i], { fill: LIGHT })), { header: true })];
+    const add = (rol, a, g, e) => rows.push(trow([tc(p(r(rol, { b: true }), { after: 0 }), w4[0]), tc(p(val(a), { after: 0 }), w4[1]), tc(p(val(g), { after: 0 }), w4[2]), tc(p(val(e), { after: 0 }), w4[3])], { cant: true }));
+    add('Takım Danışmanı', pj.danisman, 'Danışman', pj.danismanBilgi);
+    add('Takım Kaptanı', kap && kap.ad, kap && kap.gorev, kap && kap.egitim);
+    uy.filter(u => u !== kap).forEach((u, i) => add('Üye ' + (i + 1), u.ad, u.gorev, u.egitim));
+    B.push(table(w4, rows));
+
+    prog.bolumler.forEach(b => {
+      B.push(p(r(up(b.ad)), { style: 'Heading1', pageBreak: true }));
+      if (b.tip === 'isPaketleri') {
+        const w = [1000, 2350, 3488, 1400, 1400];
+        const head = trow(['İŞ PAKETİ NO', 'İŞ PAKETİ ADI', 'ALT FAALİYETLER', 'BAŞLANGIÇ TARİHİ', 'BİTİŞ TARİHİ'].map((h, i) => tc(p(r(h, { b: true, color: NAVY, sz: 17 }), { after: 0, jc: 'center' }), w[i], { fill: LIGHT, vAlign: 'center' })), { header: true });
+        const ip = (pj.isPaketleri || []).filter(q => has(q.ad));
+        const date = v => p(has(v) ? r(ym(v), { sz: 20 }) : r('[tarih]', { color: RED, sz: 20 }), { after: 0, jc: 'center' });
+        const body = ip.length
+          ? ip.map((q, i) => trow([tc(p(r(String(i + 1), { b: true }), { after: 0, jc: 'center' }), w[0]), tc(cellText(q.ad, { sz: 20, b: true }), w[1]), tc(cellText(q.alt, { sz: 20, ph: '[alt faaliyetler eklenecek]' }), w[2]), tc(date(q.bas), w[3]), tc(date(q.bit), w[4])], { cant: true }))
+          : [trow([tc(p(r('[İş paketleri eklenecek]', { color: RED }), { after: 0 }), TW, { span: 5 })])];
+        B.push(table(w, [head].concat(body)));
+      } else if (b.tip === 'swot') {
+        const half = TW / 2, sw = pj.swot || {};
+        const hd = (t, f) => tc(p(r(t, { b: true }), { after: 0, jc: 'center' }), half, { fill: f, vAlign: 'center' });
+        const bd = k => tc(cellText(sw[k], { sz: 21, ph: '[eklenecek]' }), half);
+        B.push(table([half, half], [trow([hd('GÜÇLÜ YÖNLER (S)', 'E2EFDA'), hd('ZAYIF YÖNLER (W)', 'FBE4D5')]), trow([bd('s'), bd('w')]), trow([hd('FIRSATLAR (O)', 'DDEBF7'), hd('TEHDİTLER (T)', 'F4DEDF')]), trow([bd('o'), bd('t')])]));
+      } else {
+        B.push(text((pj.bolumler || {})[b.k], { jc: 'both', after: 140 }));
+      }
+    });
+
+    B.push(p(r('TEŞEKKÜRLER', { b: true, color: NAVY, sz: 52 }), { jc: 'center', pageBreak: true, before: 3000, after: 480 }));
+    B.push(p(has(pj.slogan) ? r('“' + String(pj.slogan).trim() + '”', { i: true, sz: 32, color: '404040' }) : r('[Slogan eklenecek]', { i: true, sz: 28, color: RED }), { jc: 'center' }));
+
+    const foot = [has(pj.takimAdi) ? String(pj.takimAdi).trim() : 'Takım adı', 'Takım ID: ' + (has(pj.takimId) ? String(pj.takimId).trim() : '—'), 'Başvuru ID: ' + (has(pj.basvuruId) ? String(pj.basvuruId).trim() : '—'), kat, pj.seviye].filter(has).join(' · ');
+    const footer = `<w:p><w:pPr><w:pStyle w:val="Footer"/><w:pBdr><w:top w:val="single" w:sz="4" w:space="4" w:color="A6A6A6"/></w:pBdr></w:pPr>${r(foot, { sz: 16, color: '595959' })}<w:r><w:tab/></w:r>${PAGE(16)}</w:p>`;
+    return pack({ body: B.join(''), font: 'Arial', size: 22, margin: M, footSz: 16, titlePg: true, footer,
+      h1: { sz: 30, color: NAVY, before: 0, after: 240, border: ORANGE },
+      title: pj.baslik || 'TEKNOFEST Projesi', author: pj.danisman || 'Burak TURGUT' });
+  }
+
+  function cizelge(pj, TW) {
+    const n = Math.min(12, Math.max(2, Number(pj.tSure) || 6));
+    const start = /^\d{4}-\d{2}$/.test(pj.tBas || '') ? pj.tBas : null;
+    const ms = Array.from({ length: n }, (_, i) => start ? addM(start, i) : '');
+    const first = 2700, each = Math.floor((TW - first) / n), last = TW - first - each * (n - 1);
+    const w = [first].concat(Array.from({ length: n }, (_, i) => i === n - 1 ? last : each));
+    const short = n > 7;
+    const mName = m => { if (!m) return ''; const k = Number(m.split('-')[1]) - 1; return short ? AYK[k] : up(AY[k]); };
+    const hdr1 = trow([tc(p(r('İşin Adı', { b: true }), { after: 0, jc: 'center' }), w[0], { vMerge: 'restart', vAlign: 'center', fill: 'D9D9D9' }), tc(p(r('AYLAR', { b: true }), { after: 0, jc: 'center' }), TW - first, { span: n, fill: 'D9D9D9' })], { header: true });
+    const hdr2 = trow([tc(p('', { after: 0 }), w[0], { vMerge: 'continue', fill: 'D9D9D9' })].concat(ms.map((m, i) => tc(p(r(mName(m), { b: true, sz: short ? 16 : 18 }), { after: 0, jc: 'center' }), w[i + 1], { fill: 'F2F2F2', vAlign: 'center' }))), { header: true });
+    const data = (pj.cizelge || []).filter(q => has(q.ad));
+    const body = data.length
+      ? data.map(q => trow([tc(p(r(String(q.ad).trim(), { sz: 22 }), { after: 0 }), w[0])].concat(ms.map((m, i) => tc(p((q.aylar || []).includes(i) ? r('X', { b: true }) : '', { after: 0, jc: 'center' }), w[i + 1], { vAlign: 'center' }))), { cant: true }))
+      : [trow([tc(p(r('[İş satırları eklenecek]', { color: RED }), { after: 0 }), TW, { span: n + 1 })])];
+    const note = start ? p(r(`Çizelge ${ym(ms[0])} – ${ym(ms[n - 1])} dönemini kapsar.`, { i: true, sz: 20 }), { after: 160 }) : '';
+    return table(w, [hdr1, hdr2].concat(body)) + note;
+  }
+
+  // TÜBİTAK proje yazma şablonu 2026–2027: Times New Roman 12, 2,5 cm kenar, tek satır, iki yana yaslı
+  function tubitak(pj, prog) {
+    const M = 1418, TW = 11906 - 2 * M, IND = 426;
+    const B = [];
+    const sec = k => (pj.bolumler || {})[k];
+    const lab = (l, v, o) => p(r(l + ': ', { b: true }) + (has(v) ? rich(String(v).trim()) : r('[eklenecek]', { color: RED })), Object.assign({ jc: 'both', after: 116 }, o));
+    B.push(lab('Proje Ana Alanı', pj.anaAlan));
+    B.push(lab('Proje Tematik Alanı', pj.tematik));
+    B.push(lab('Proje Adı (Başlığı)', pj.baslik, { after: 240 }));
+    const yz = pj.yz || {};
+    B.push(p(r('Yapay Zeka Araçları Kullanım Beyanı:', { b: true }), { after: 116, keepNext: true }));
+    if (pj.yzKullanildi || ['arac', 'amac', 'kapsam', 'mudahale'].some(k => has(yz[k]))) {
+      [['Kullanılan araçlar', 'arac'], ['Kullanım amacı', 'amac'], ['Kullanım kapsamı', 'kapsam'], ['İnsan müdahalesi', 'mudahale']]
+        .forEach(([l, k]) => B.push(lab(l, yz[k], { ind: `<w:ind w:left="${IND}"/>` })));
+    } else {
+      B.push(p(r('Proje kapsamında üretken yapay zekâ (ÜYZ) araçları kullanılmamıştır.'), { jc: 'both', after: 116, ind: `<w:ind w:left="${IND}"/>` }));
+    }
+    prog.bolumler.forEach(b => {
+      if (b.k === 'anahtar') return;
+      if (b.k === 'ekler' && !has(sec('ekler'))) return;
+      B.push(p(r(b.ad), { style: 'Heading1', pageBreak: b.k === 'ekler' }));
+      if (b.tip === 'cizelge') { B.push(cizelge(pj, TW)); return; }
+      if (b.k === 'kaynaklar') {
+        const ls = lines(sec('kaynaklar'));
+        B.push(ls.length ? ls.map(l => p(rich(l.replace(BUL, '$1')), { ind: '<w:ind w:left="709" w:hanging="709"/>', jc: 'both', after: 116 })).join('')
+          : p(r('[Kaynaklar APA kurallarına göre eklenecek]', { color: RED, i: true })));
+        return;
+      }
+      B.push(text(sec(b.k), { firstLine: IND, jc: 'both', after: 116 }));
+      if (b.k === 'ozet') B.push(lab('Anahtar Kelimeler', sec('anahtar'), { before: 120 }));
+    });
+    const footer = `<w:p><w:pPr><w:pStyle w:val="Footer"/><w:jc w:val="center"/></w:pPr>${PAGE(20)}</w:p>`;
+    return pack({ body: B.join(''), font: 'Times New Roman', size: 24, margin: M, footSz: 20, titlePg: false, footer,
+      h1: { sz: 24, color: '000000', before: 240, after: 116 },
+      title: pj.baslik || 'TÜBİTAK Proje Raporu', author: pj.danisman || 'Burak TURGUT' });
+  }
+
+  return { build: (pj, prog) => pj.program === 'tubitak' ? tubitak(pj, prog) : teknofest(pj, prog) };
+})();
+/* DOCX-BITTI */
+
+
+// MEB 2026–2027 çalışma takvimi
+const YIL = {
+  bas: '2026-09-14', bit: '2027-06-25',
+  donemler: [{ ad: '1. dönem', bas: '2026-09-14', bit: '2027-01-22' }, { ad: '2. dönem', bas: '2027-02-08', bit: '2027-06-25' }],
+  tatiller: [
+    { ad: '1. dönem ara tatili', bas: '2026-11-16', bit: '2026-11-20' },
+    { ad: 'Yarıyıl tatili', bas: '2027-01-25', bit: '2027-02-05' },
+    { ad: '2. dönem ara tatili', bas: '2027-03-08', bit: '2027-03-12' }
+  ]
+};
+const YEAR = (() => {
+  const start = pd(YIL.bas), end = pd(YIL.bit);
+  const hol = YIL.tatiller.map(t => ({ ad: t.ad, b: pd(t.bas), e: pd(t.bit) }));
+  const weeks = []; let n = 0;
+  for (let m = monday(start); m <= end; m = addDays(m, 7)) {
+    const h = hol.find(t => m >= monday(t.b) && m <= t.e) || null;
+    weeks.push({ mon: m, tatil: h, no: h ? null : ++n });
+  }
+  const t = today0(), tm = +monday(t);
+  return { start, end, hol, weeks, total: n, today: t, cur: weeks.findIndex(w => +w.mon === tm) };
+})();
+
+/* ── Durum ve kayıt katmanı ── */
+const COLS = ['ogrenciler', 'projeler', 'baglantilar'];
+const S = {
+  mode: 'loading',
+  loaded: { ogrenciler: false, projeler: false, baglantilar: false },
+  ogrenciler: [], projeler: [], baglantilar: [],
+  view: 'panel',
+  f: { q: '', sinif: '', durum: '' },
+  pf: '',
+  openProject: null, creating: null, focusTitle: false
+};
+let db = null, sample = null, downloads = null;
+let resolveReady; const ready = new Promise(r => { resolveReady = r; });
+const chains = {};
+
+function newId(col) {
+  if (db) { try { return db.collection(col).doc().id; } catch (e) { /* aşağıdaki yedek kimlik */ } }
+  return col[0] + Date.now().toString(36) + rid();
+}
+function deepMerge(t, s) {
+  Object.keys(s).forEach(k => {
+    const v = s[k];
+    t[k] = (v && typeof v === 'object' && !Array.isArray(v)) ? deepMerge(Object.assign({}, t[k] || {}), v) : v;
+  });
+  return t;
+}
+function localApply(col, id, op, data) {
+  const arr = S[col]; const i = arr.findIndex(x => x.id === id);
+  if (op === 'set') { const o = Object.assign({}, data, { id }); if (i >= 0) arr[i] = o; else arr.push(o); }
+  else if (op === 'update') { if (i < 0) throw { code: 'invalid_argument' }; arr[i] = deepMerge(Object.assign({}, arr[i]), data); }
+  else if (i >= 0) arr.splice(i, 1);
+  onData(col);
+}
+function write(col, id, op, data) {
+  const key = col + '/' + id;
+  const run = async () => {
+    await ready;
+    if (!db) { localApply(col, id, op, data); return; }
+    const ref = db.collection(col).doc(id);
+    const go = () => op === 'set' ? ref.set(data) : op === 'update' ? ref.update(data) : ref.delete();
+    try { await go(); }
+    catch (e) {
+      if (e && e.code === 'unavailable') { await new Promise(r => setTimeout(r, 500 + Math.random() * 700)); await go(); }
+      else throw e;
+    }
+  };
+  const p = (chains[key] || Promise.resolve()).catch(() => {}).then(run);
+  chains[key] = p;
+  p.catch(writeErr);
+  return p;
+}
+function writeErr(e) {
+  const c = e && e.code;
+  if (c === 'invalid_argument') toast('Bu sayfada değişiklik yapma izniniz yok.');
+  else if (c === 'quota_exceeded') toast('Kayıt alanı doldu. Eski kayıtları silip tekrar deneyin.');
+  else if (c === 'revoked') toast('Sayfaya erişim değişti. Sayfayı yenileyin.');
+  else toast('Kaydedilemedi. Bağlantınızı kontrol edip tekrar deneyin.');
+}
+
+// Sayfa üç ortamda çalışır: claude.ai (yetenekler), kendi sunucusu (sunucu/ klasörü) ya da yalnızca tarayıcı
+const IN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
+async function connect() {
+  if (!IN_CLAUDE) return connectStandalone();
+  const use = n => {
+    try { return Promise.resolve(window.claude.use(n)).catch(() => null); } catch (e) { return Promise.resolve(null); }
+  };
+  use('sample').then(s => { sample = s || null; document.body.classList.toggle('has-ai', !!sample); });
+  use('downloads').then(d => { downloads = d || null; document.body.classList.toggle('has-dl', !!downloads); });
+  db = await use('db');
+  S.mode = db ? 'db' : 'local';
+  resolveReady();
+  renderSync();
+  if (!db) { COLS.forEach(c => { S.loaded[c] = true; onData(c); }); return; }
+  subscribeAll();
+}
+function subscribeAll() {
+  COLS.forEach(col => {
+    try {
+      db.collection(col).onSnapshot(snap => {
+        S[col] = snap.docs.map(d => Object.assign({}, d.data(), { id: d.id }));
+        S.loaded[col] = true;
+        onData(col);
+      }, err => {
+        console.warn(col, err);
+        S.loaded[col] = true;
+        onData(col);
+        toast('Kayıtlara ulaşılamadı. Sayfayı yenileyin.');
+      });
+    } catch (e) { console.warn(e); S.loaded[col] = true; onData(col); }
+  });
+}
+
+/* ── Claude dışında: sunucu ya da tarayıcı deposu ── */
+async function connectStandalone() {
+  downloads = blobDownloads(); document.body.classList.add('has-dl');
+  let durum = null;
+  if (/^https?:$/.test(location.protocol)) {
+    try { const r = await fetch('api/durum', { credentials: 'same-origin', cache: 'no-store' }); if (r.ok) durum = await r.json(); } catch (e) { /* sunucu yok */ }
+  }
+  if (durum && durum.uygulama === 'okul-takip') {
+    S.mode = 'sunucu';
+    if (durum.girisGerekli && !durum.girisYapildi) await showLogin();
+    db = makeStore(serverBackend);
+    if (durum.ai) { sample = serverSample(); document.body.classList.add('has-ai'); }
+  } else {
+    S.mode = 'tarayici';
+    db = makeStore(browserBackend);
+  }
+  for (;;) {
+    try { await db.init(); break; }
+    catch (e) {
+      if (e && e.code === 'unauthorized') { await showLogin(); continue; }
+      toast('Kayıtlar yüklenemedi. Sayfayı yenileyin.'); break;
+    }
+  }
+  resolveReady();
+  renderSync();
+  subscribeAll();
+}
+function blobDownloads() {
+  return {
+    save: ({ filename, data }) => new Promise((resolve, reject) => {
+      try {
+        const blob = data instanceof Blob ? data : new Blob([data]);
+        const url = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = filename; a.style.display = 'none';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        resolve({ status: 'saved' });
+      } catch (e) { reject({ code: 'unavailable' }); }
+    })
+  };
+}
+// db yeteneğinin bu sayfada kullanılan kısmı: collection().doc().set/update/delete ve onSnapshot
+function makeStore(backend) {
+  const data = {}, subs = {};
+  COLS.forEach(c => { data[c] = {}; subs[c] = []; });
+  const snap = col => { const docs = Object.keys(data[col]).map(id => ({ id, exists: true, data: () => data[col][id], metadata: {} })); return { docs, size: docs.length, empty: !docs.length }; };
+  const emit = col => subs[col].forEach(f => { try { f(snap(col)); } catch (e) { console.error(e); } });
+  const resync = async () => { try { const all = await backend.load(); COLS.forEach(c => { data[c] = (all && all[c]) || {}; emit(c); }); } catch (e) { /* bir sonraki yazmada yeniden denenir */ } };
+  const clone = v => JSON.parse(JSON.stringify(v));
+  return {
+    async init() { const all = await backend.load(); COLS.forEach(c => { data[c] = (all && all[c]) || {}; }); },
+    collection(col) {
+      return {
+        doc(id) {
+          id = id || (col[0] + Date.now().toString(36) + rid());
+          const run = async (apply, send) => { apply(); emit(col); try { await send(); } catch (e) { await resync(); throw e; } };
+          return {
+            id,
+            set: d => run(() => { data[col][id] = clone(d); }, () => backend.put(col, id, data[col][id], data)),
+            update: d => {
+              if (!data[col][id]) return Promise.reject({ code: 'invalid_argument' });
+              return run(() => { data[col][id] = deepMerge(clone(data[col][id]), clone(d)); }, () => backend.patch(col, id, d, data));
+            },
+            delete: () => run(() => { delete data[col][id]; }, () => backend.del(col, id, data))
+          };
+        },
+        onSnapshot(next) { subs[col].push(next); setTimeout(() => next(snap(col)), 0); return () => { subs[col] = subs[col].filter(f => f !== next); }; }
+      };
+    }
+  };
+}
+async function api(method, path, body) {
+  let r;
+  try { r = await fetch('api/' + path, { method, credentials: 'same-origin', cache: 'no-store', headers: body ? { 'Content-Type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined }); }
+  catch (e) { throw { code: 'unavailable' }; }
+  if (r.status === 401) { showLogin(); throw { code: 'unauthorized' }; }
+  if (r.status === 404) throw { code: 'invalid_argument' };
+  if (r.status === 413) throw { code: 'quota_exceeded' };
+  if (!r.ok) throw { code: 'unavailable' };
+  return r.status === 204 ? null : r.json();
+}
+const yol = (c, i) => `veri/${encodeURIComponent(c)}/${encodeURIComponent(i)}`;
+const serverBackend = {
+  load: () => api('GET', 'veri'),
+  put: (c, i, d) => api('PUT', yol(c, i), d),
+  patch: (c, i, d) => api('PATCH', yol(c, i), d),
+  del: (c, i) => api('DELETE', yol(c, i))
+};
+const LS_KEY = 'okulTakip.veri.v1';
+const browserBackend = {
+  load: async () => { try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { return {}; } },
+  save: async all => { try { localStorage.setItem(LS_KEY, JSON.stringify(all)); } catch (e) { throw { code: 'quota_exceeded' }; } }
+};
+browserBackend.put = (c, i, d, all) => browserBackend.save(all);
+browserBackend.patch = (c, i, d, all) => browserBackend.save(all);
+browserBackend.del = (c, i, all) => browserBackend.save(all);
+
+let loginWait = null;
+function showLogin() {
+  if (loginWait) return loginWait;
+  loginWait = new Promise(resolve => {
+    let el = $('#loginWrap');
+    if (!el) { el = document.createElement('div'); el.id = 'loginWrap'; el.className = 'modal-wrap'; document.body.appendChild(el); }
+    el.hidden = false;
+    el.innerHTML = `<form class="modal login" id="loginForm" novalidate>
+      <div class="brand"><span class="mark" aria-hidden="true">BT</span><div><span class="brand-name">Burak TURGUT</span><span class="brand-sub">OKUL TAKİP SİSTEMİ</span></div></div>
+      <label class="field"><span>Panel şifresi</span><input class="inp" id="lg-sifre" type="password" autocomplete="current-password"></label>
+      <p class="form-err" id="lg-err" hidden></p>
+      <button class="btn primary big" type="submit">Giriş yap</button></form>`;
+    setTimeout(() => $('#lg-sifre').focus(), 30);
+    $('#loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const err = $('#lg-err'); err.hidden = true;
+      try {
+        const r = await fetch('api/giris', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sifre: $('#lg-sifre').value }) });
+        if (r.ok) { el.hidden = true; loginWait = null; resolve(); return; }
+        err.textContent = r.status === 429 ? 'Çok fazla deneme yapıldı. Birkaç dakika sonra tekrar deneyin.' : 'Şifre yanlış.';
+      } catch (x) { err.textContent = 'Sunucuya ulaşılamadı.'; }
+      err.hidden = false;
+    });
+  });
+  return loginWait;
+}
+function parseJsonLoose(t) {
+  t = String(t || '').trim();
+  const tries = [t];
+  const f = t.match(/```(?:json)?\s*([\s\S]*?)```/); if (f) tries.push(f[1]);
+  const a = Math.min(...['[', '{'].map(c => t.indexOf(c)).filter(i => i >= 0)), z = Math.max(t.lastIndexOf(']'), t.lastIndexOf('}'));
+  if (isFinite(a) && z > a) tries.push(t.slice(a, z + 1));
+  for (const s of tries) { try { return JSON.parse(s); } catch (e) { /* sıradaki */ } }
+  return undefined;
+}
+// sample yeteneğinin sunucudaki karşılığı: /api/ai metni parça parça akıtır
+function serverSample() {
+  const HATA = '\u0000HATA:';
+  async function call(input, opts) {
+    opts = opts || {};
+    const prompt = typeof input === 'string' ? input : input.map(m => m.content).join('\n\n');
+    let r;
+    try { r = await fetch('api/ai', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt, json: !!opts.json }), signal: opts.signal }); }
+    catch (e) { throw { code: e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error' }; }
+    if (r.status === 401) { showLogin(); throw { code: 'session_expired' }; }
+    if (r.status === 429) throw { code: 'rate_limited' };
+    if (r.status === 503) throw { code: 'sampling_disabled' };
+    if (!r.ok || !r.body) throw { code: 'upstream_error' };
+    const reader = r.body.getReader(), dec = new TextDecoder();
+    let raw = '', text = '';
+    try {
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        raw += dec.decode(value, { stream: true });
+        const shown = raw.split(HATA)[0];
+        if (shown.length > text.length) { const delta = shown.slice(text.length); text = shown; if (opts.onText) opts.onText({ text, delta }); }
+      }
+    } catch (e) { throw { code: e && e.name === 'AbortError' ? 'cancelled' : 'upstream_error', text }; }
+    if (raw.includes(HATA)) { const kod = raw.split(HATA)[1].trim(); throw { code: kod === 'refused' ? 'refused' : 'upstream_error', text: text || undefined }; }
+    if (!text.trim()) throw { code: 'empty_completion' };
+    return { text, truncated: false };
+  }
+  call.json = async (input, opts) => {
+    const { text } = await call(input, Object.assign({}, opts, { onText: null, json: true }));
+    const v = parseJsonLoose(text);
+    if (v === undefined) throw { code: 'invalid_json', text };
+    return v;
+  };
+  return call;
+}
+async function ensureJSZip() {
+  if (window.JSZip) return true;
+  await new Promise(res => { const s = document.createElement('script'); s.src = 'vendor/jszip.min.js'; s.onload = res; s.onerror = res; document.head.appendChild(s); });
+  return !!window.JSZip;
+}
+
+function onData(col) {
+  if (col === 'ogrenciler') {
+    renderStudents();
+    if (drawerSid) renderDrawerLists();
+    const p = currentProject(); if (p && $('.ed')) renderTeam(p);
+  } else if (col === 'projeler') {
+    renderProjectList(); renderMiniProjects(); syncEditor();
+    if (drawerSid) renderDrawerLists();
+  } else if (col === 'baglantilar') {
+    renderNotlar(); renderFiles(); renderPlans();
+  }
+}
+
+/* ── Genel arayüz ── */
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3400); }
+
+function armConfirm(btn, label, fn) {
+  if (btn.dataset.armed === '1') { delete btn.dataset.armed; clearTimeout(btn._t); btn.classList.remove('armed'); fn(); return; }
+  btn.dataset.armed = '1'; btn._orig = btn.innerHTML; btn.textContent = label; btn.classList.add('armed');
+  btn._t = setTimeout(() => { if (!btn.isConnected) return; delete btn.dataset.armed; btn.innerHTML = btn._orig; btn.classList.remove('armed'); }, 4000);
+}
+
+let lastFocus = null, drawerSid = null;
+function showDrawer(focusSel) {
+  lastFocus = document.activeElement;
+  $('#scrim').hidden = false; $('#drawer').hidden = false; document.body.classList.add('locked');
+  setTimeout(() => { const f = $(focusSel || '#drawer input'); if (f) f.focus(); }, 40);
+}
+function modal(html, focusSel) {
+  if ($('#modal').hidden) lastFocus = document.activeElement;
+  $('#modalBox').innerHTML = html; $('#modal').hidden = false; document.body.classList.add('locked');
+  setTimeout(() => { const f = $(focusSel || '#modalBox input, #modalBox textarea'); if (f) f.focus(); }, 40);
+}
+function closeAll() {
+  $('#drawer').hidden = true; $('#modal').hidden = true; $('#scrim').hidden = true;
+  document.body.classList.remove('locked'); drawerSid = null;
+  if (lastFocus && lastFocus.isConnected && lastFocus.focus) lastFocus.focus();
+  lastFocus = null;
+}
+function closeMenus(except) { $$('details.menu[open]').forEach(d => { if (d !== except) d.open = false; }); }
+function autosize(t) { if (!t) return; t.style.height = 'auto'; t.style.height = (t.scrollHeight + 2) + 'px'; }
+
+function renderSync() {
+  const el = $('#syncChip'); el.dataset.mode = S.mode;
+  $('span', el).textContent = { loading: 'Bağlanıyor…', db: 'Kayıtlar bulutta', sunucu: 'Kayıtlar sunucuda', tarayici: 'Kayıtlar bu tarayıcıda', local: 'Kayıt kapalı' }[S.mode];
+  el.title = { db: 'Öğrenci, proje ve bağlantı kayıtlarınız bu sayfanın veritabanında saklanır; yalnızca siz görebilirsiniz.', sunucu: 'Kayıtlarınız kendi sunucunuzdaki veri dosyasında saklanır.', tarayici: 'Kayıtlar yalnızca bu tarayıcıda saklanır.', local: 'Bu görünümde kayıt yapılamıyor; değişiklikler sayfa kapanınca kaybolur.' }[S.mode] || '';
+  const note = { local: 'Bu görünümde kayıt yapılamıyor: eklediğiniz bilgiler sayfa kapanınca silinir. Kalıcı kayıt için sayfayı Claude üzerinden ya da kendi sunucunuzdan açın.', tarayici: 'Sunucu bulunamadı: kayıtlar yalnızca bu tarayıcıda saklanıyor ve yapay zekâ özellikleri kapalı. Sunucu kurulumu için sunucu klasöründeki README dosyasına bakın.' }[S.mode];
+  $('#localNote').hidden = !note;
+  if (note) $('#localNote .wrap').textContent = note;
+}
+function setView(v, keepHash) {
+  if (!['panel', 'planlar', 'atolye'].includes(v)) v = 'panel';
+  flushAll();
+  S.view = v;
+  $$('.view').forEach(el => { el.hidden = el.id !== 'view-' + v; });
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.v === v)));
+  if (!keepHash) { try { history.replaceState(null, '', '#' + v); } catch (e) { /* çerçeve izin vermeyebilir */ } }
+  if (v === 'atolye') renderEditor();
+  window.scrollTo(0, 0);
+}
+
+/* ── Takvim ── */
+function yearStatus() {
+  const Y = YEAR;
+  if (Y.today < Y.start) return { kind: 'before', days: diffDays(Y.today, Y.start) };
+  if (Y.today > Y.end || Y.cur < 0) return { kind: 'after' };
+  const w = Y.weeks[Y.cur];
+  return w.tatil ? { kind: 'hol', w } : { kind: 'week', w };
+}
+function nextHoliday() { return YEAR.hol.find(h => h.b > YEAR.today) || null; }
+function renderCalendar() {
+  const st = yearStatus(), Y = YEAR;
+  const chipTxt = st.kind === 'week' ? `<b>${st.w.no}. hafta</b>2026–2027`
+    : st.kind === 'hol' ? `<b>${esc(st.w.tatil.ad)}</b>`
+    : st.kind === 'before' ? `<b>Okula ${st.days} gün</b>2026–2027` : '<b>Ders yılı tamamlandı</b>';
+  $('#weekChip').innerHTML = chipTxt;
+  $('#calToday').textContent = Y.today.toLocaleDateString(TR, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const passed = st.kind === 'week' ? st.w.no : st.kind === 'hol' ? Y.weeks.slice(0, Y.cur).filter(w => w.no).length : st.kind === 'after' ? Y.total : 0;
+  const big = st.kind === 'week' ? `<b>${st.w.no}.</b><span>ders haftası · toplam ${Y.total}</span>`
+    : st.kind === 'hol' ? `<b>Tatil</b><span>${esc(st.w.tatil.ad)}</span>`
+    : st.kind === 'before' ? `<b>${st.days}</b><span>gün sonra okullar açılıyor</span>` : `<b>${Y.total}</b><span>ders haftası tamamlandı</span>`;
+  const nh = nextHoliday();
+  const nextTxt = nh ? `Sıradaki: <b>${esc(nh.ad)}</b> · ${fRange(nh.b, nh.e)} · ${diffDays(Y.today, nh.b)} gün sonra`
+    : `Ders yılı ${fLong(Y.end)} tarihinde bitiyor.`;
+  $('#calBody').innerHTML = `<div class="bigweek">${big}</div><div class="meter" aria-hidden="true"><i style="width:${Math.round(passed / Y.total * 100)}%"></i></div><p class="next">${nextTxt}</p>`;
+
+  const d1 = YIL.donemler[0], d2 = YIL.donemler[1];
+  $('#yearTop').innerHTML = `<div><p class="eyebrow" id="h-year">2026–2027 EĞİTİM-ÖĞRETİM YILI</p><div class="bigweek">${big}</div></div>
+    <dl class="terms">
+      <div><dt>1. DÖNEM</dt><dd>${fRange(pd(d1.bas), pd(d1.bit))}</dd></div>
+      <div><dt>2. DÖNEM</dt><dd>${fRange(pd(d2.bas), pd(d2.bit))}</dd></div>
+      <div><dt>SIRADAKİ TATİL</dt><dd>${nh ? fRange(nh.b, nh.e) + ' · ' + diffDays(Y.today, nh.b) + ' gün' : '—'}</dd></div>
+    </dl>`;
+
+  const tl = $('#timeline'), n = Y.weeks.length;
+  tl.style.gridTemplateColumns = `repeat(${n}, minmax(20px, 1fr))`;
+  const MON = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+  let html = '', prevM = -1;
+  Y.weeks.forEach((w, i) => {
+    const m = addDays(w.mon, 3).getMonth();
+    if (m !== prevM) { html += `<span class="tl-m" style="grid-column:${i + 1} / span ${Math.min(3, n - i)}">${MON[m]}</span>`; prevM = m; }
+  });
+  Y.weeks.forEach((w, i) => {
+    const cls = w.tatil ? 'hol' : i < Y.cur ? 'past' : i === Y.cur ? 'now' : '';
+    const tip = w.tatil ? `${w.tatil.ad} · ${fShort(w.mon)}` : `${w.no}. hafta · ${fShort(w.mon)} – ${fShort(addDays(w.mon, 4))}`;
+    html += `<span class="tl-w ${cls}" style="grid-column:${i + 1}" title="${esc(tip)}">${w.tatil ? '' : w.no}</span>`;
+  });
+  YIL.donemler.forEach(d => {
+    const a = Y.weeks.findIndex(w => +w.mon === +monday(pd(d.bas)));
+    const b = Y.weeks.findIndex(w => +w.mon === +monday(pd(d.bit)));
+    if (a >= 0 && b >= 0) html += `<span class="tl-d" style="grid-column:${a + 1} / ${b + 2}">${d.ad} · ${Y.weeks.slice(a, b + 1).filter(w => w.no).length} hafta</span>`;
+  });
+  tl.innerHTML = html;
+  tl.setAttribute('aria-label', `2026–2027 ders yılı: ${Y.total} ders haftası. ${st.kind === 'week' ? 'Şu an ' + st.w.no + '. haftadasınız.' : ''}`);
+}
+
+/* ── Bağlantılar ── */
+function linksOf(b) { return S.baglantilar.filter(l => l.bolum === b).sort((x, y) => (x.olusturma || 0) - (y.olusturma || 0)); }
+function renderNotlar() {
+  const slot = $('#notlarSlot'); const links = linksOf('notlar');
+  if (!S.loaded.baglantilar) { slot.innerHTML = `<button class="btn notes" type="button" disabled>${ic('note')}Notlar</button>`; return; }
+  if (!links.length) {
+    slot.innerHTML = `<button class="btn notes" type="button" data-act="link-add" data-bolum="notlar">${ic('note')}Notlar<span class="muted" style="font-weight:500">· bağlantı ekle</span></button>`;
+    return;
+  }
+  const main = links[0];
+  slot.innerHTML = `<span class="split"><a class="btn notes" href="${esc(main.url)}" target="_blank" rel="noopener noreferrer" title="${esc(main.baslik)} · ${esc(hostOf(main.url))}">${ic('note')}Notlar${ic('ext', 'sm')}</a>
+    <details class="menu"><summary class="btn notes" aria-label="Not bağlantılarını yönet">${ic('caret', 'sm')}</summary>
+      <div class="menu-pop">${links.map(l => `<div class="menu-row"><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${esc(l.baslik)}</a><button class="icon-btn" type="button" data-act="link-edit" data-id="${esc(l.id)}" aria-label="${esc(l.baslik)} bağlantısını düzenle">${ic('edit')}</button></div>`).join('')}
+      <button class="link-btn" type="button" data-act="link-add" data-bolum="notlar">+ Başka not bağlantısı ekle</button></div>
+    </details></span>`;
+}
+function renderFiles() {
+  const box = $('#filesBody');
+  if (!S.loaded.baglantilar) { box.innerHTML = '<p class="empty compact">Yükleniyor…</p>'; return; }
+  const links = linksOf('dosyalar');
+  if (!links.length) {
+    box.innerHTML = `<div class="empty compact">${ic('folder', 'lg')}<h3>Drive klasörünüz burada açılacak</h3><p>Google Drive klasör bağlantınızı ekleyin; buradan tek tıkla açılsın.</p><button class="btn primary sm" type="button" data-act="link-add" data-bolum="dosyalar">${ic('plus')}Drive bağlantısı ekle</button></div>`;
+    return;
+  }
+  const [main, ...rest] = links;
+  box.innerHTML = `<div class="drive-main"><a class="drive-link" href="${esc(main.url)}" target="_blank" rel="noopener noreferrer"><span class="drive-ic">${ic('folder')}</span><span class="dl-txt"><b>${esc(main.baslik)}</b><small>${esc(main.aciklama || hostOf(main.url))}</small></span>${ic('ext', 'sm')}</a><button class="icon-btn" type="button" data-act="link-edit" data-id="${esc(main.id)}" aria-label="${esc(main.baslik)} bağlantısını düzenle">${ic('edit')}</button></div>`
+    + rest.map(l => `<div class="lrow"><a href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">${ic('folder')}<span class="dl-txt"><b>${esc(l.baslik)}</b><small>${esc(l.aciklama || hostOf(l.url))}</small></span></a><button class="icon-btn" type="button" data-act="link-edit" data-id="${esc(l.id)}" aria-label="${esc(l.baslik)} bağlantısını düzenle">${ic('edit')}</button></div>`).join('');
+}
+function renderPlans() {
+  const box = $('#planGrid');
+  if (!S.loaded.baglantilar) { box.innerHTML = '<div class="card empty">Yükleniyor…</div>'; return; }
+  const links = linksOf('planlar');
+  if (!links.length) {
+    box.innerHTML = `<div class="card empty" style="grid-column:1 / -1">${ic('doc', 'lg')}<h3>Henüz plan bağlantısı yok</h3><p>Drive'daki yıllık plan dosyalarınızın bağlantılarını ekleyin. Her sınıf veya ders için ayrı bir kart oluşur ve tek tıkla açılır.</p><button class="btn primary" type="button" data-act="link-add" data-bolum="planlar">${ic('plus')}Plan bağlantısı ekle</button></div>`;
+    return;
+  }
+  box.innerHTML = links.map(l => `<article class="card plan"><div class="plan-top"><span class="doc-ic">${ic('doc')}</span><div style="min-width:0"><h3>${esc(l.baslik)}</h3>${l.aciklama ? `<p>${esc(l.aciklama)}</p>` : ''}<p class="host">${esc(hostOf(l.url))}</p></div></div>
+    <div class="plan-actions"><a class="btn sm notes" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">Drive'da aç${ic('ext', 'sm')}</a><button class="icon-btn" type="button" data-act="link-edit" data-id="${esc(l.id)}" aria-label="${esc(l.baslik)} bağlantısını düzenle">${ic('edit')}</button></div></article>`).join('')
+    + `<button class="card plan add" type="button" data-act="link-add" data-bolum="planlar">${ic('plus')}Başka bir plan ekle</button>`;
+}
+function normUrl(v) {
+  v = String(v || '').trim(); if (!v) return null;
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  try { const u = new URL(v); if (!/^https?:$/.test(u.protocol) || !u.hostname.includes('.')) return null; return u.href; } catch (e) { return null; }
+}
+function openLinkModal(bolum, id) {
+  closeMenus();
+  const l = id ? S.baglantilar.find(x => x.id === id) : null;
+  const b = l ? l.bolum : (BOLUM[bolum] ? bolum : 'dosyalar');
+  modal(`<div class="m-head"><h2 id="modalTitle">${l ? 'Bağlantıyı düzenle' : 'Bağlantı ekle'}</h2><button class="icon-btn" type="button" data-act="close" aria-label="Kapat">${ic('close')}</button></div>
+  <form id="linkForm" class="form" novalidate data-id="${l ? esc(l.id) : ''}">
+    <label class="field"><span>Bölüm</span><select class="inp" id="lf-bolum">${Object.entries(BOLUM).map(([k, v]) => `<option value="${k}" ${k === b ? 'selected' : ''}>${v.ad}</option>`).join('')}</select></label>
+    <label class="field"><span>Başlık</span><input class="inp" id="lf-baslik" autocomplete="off" value="${esc(l ? l.baslik : '')}" placeholder="${esc(BOLUM[b].ornek)}"></label>
+    <label class="field"><span>Bağlantı adresi</span><input class="inp" id="lf-url" type="url" inputmode="url" autocomplete="off" value="${esc(l ? l.url : '')}" placeholder="https://drive.google.com/…"></label>
+    <label class="field"><span>Açıklama <em>(isteğe bağlı)</em></span><input class="inp" id="lf-aciklama" autocomplete="off" value="${esc(l ? l.aciklama || '' : '')}" placeholder="${esc(BOLUM[b].acik)}"></label>
+    <p class="form-err" id="lf-err" hidden></p>
+    <div class="form-actions"><button class="btn primary" type="submit">Kaydet</button><button class="btn ghost" type="button" data-act="close">Vazgeç</button>${l ? `<button class="btn danger-ghost" type="button" data-act="link-del" data-id="${esc(l.id)}" style="margin-left:auto">${ic('trash')}Sil</button>` : ''}</div>
+  </form>`, l ? '#lf-baslik' : '#lf-url');
+}
+function saveLink() {
+  const f = $('#linkForm'); const id = f.dataset.id;
+  const bolum = $('#lf-bolum').value;
+  const url = normUrl($('#lf-url').value);
+  const err = $('#lf-err');
+  if (!url) { err.textContent = 'Geçerli bir bağlantı yapıştırın (ör. https://drive.google.com/…).'; err.hidden = false; $('#lf-url').focus(); return; }
+  const data = { bolum, url, baslik: $('#lf-baslik').value.trim() || BOLUM[bolum].varsayilan, aciklama: $('#lf-aciklama').value.trim(), guncelleme: Date.now() };
+  if (id) write('baglantilar', id, 'update', data);
+  else write('baglantilar', newId('baglantilar'), 'set', Object.assign(data, { olusturma: Date.now() }));
+  closeAll(); toast(id ? 'Bağlantı güncellendi' : 'Bağlantı eklendi');
+}
+
+/* ── Öğrenciler ── */
+function sortStudents(a) {
+  return a.slice().sort((x, y) => String(x.sinif || '').localeCompare(String(y.sinif || ''), TR, { numeric: true })
+    || (Number(x.no) || 0) - (Number(y.no) || 0) || String(x.ad || '').localeCompare(String(y.ad || ''), TR));
+}
+function filteredStudents() {
+  const q = lower(S.f.q.trim());
+  return sortStudents(S.ogrenciler).filter(s => (!S.f.sinif || s.sinif === S.f.sinif) && (!S.f.durum || (s.durum || 'iyi') === S.f.durum)
+    && (!q || lower([s.ad, s.no, s.sinif].concat((s.gozlemler || []).map(g => g.m)).join(' ')).includes(q)));
+}
+function lastObs(s) { return (s.gozlemler || []).slice().sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')))[0]; }
+function renderStudents() {
+  const all = S.ogrenciler, loaded = S.loaded.ogrenciler;
+  const classes = Array.from(new Set(all.map(s => s.sinif).filter(Boolean))).sort((a, b) => a.localeCompare(b, TR, { numeric: true }));
+  $('#studentSummary').textContent = !loaded ? 'Kayıtlar yükleniyor…' : all.length ? `${all.length} öğrenci · ${classes.length} sınıf` : 'Henüz öğrenci eklenmedi';
+  const counts = { dikkat: 0, takip: 0, iyi: 0 };
+  all.forEach(s => { const d = DURUM[s.durum] ? s.durum : 'iyi'; counts[d]++; });
+  $('#statRow').innerHTML = all.length ? DURUM_SUM.map(d => `<button type="button" class="spill ${d}" data-act="f-durum" data-v="${d}" aria-pressed="${S.f.durum === d}"><i class="dot"></i><b>${counts[d]}</b>${DURUM[d]}</button>`).join('') : '';
+  $('#studentBanner').hidden = !all.some(s => s.ornek);
+  $('#studentToolbar').hidden = !all.length;
+  if (S.f.sinif && !classes.includes(S.f.sinif)) S.f.sinif = '';
+  $('#classChips').innerHTML = classes.length > 1 ? [['', 'Tümü']].concat(classes.map(c => [c, c])).map(([v, l]) => `<button type="button" class="cchip" data-act="f-sinif" data-v="${esc(v)}" aria-pressed="${S.f.sinif === v}">${esc(l)}</button>`).join('') : '';
+  $('#dl-sinif').innerHTML = classes.map(c => `<option value="${esc(c)}"></option>`).join('');
+  const box = $('#studentRows');
+  if (!loaded) { box.innerHTML = '<div class="empty"><p>Öğrenci kayıtları yükleniyor…</p></div>'; return; }
+  if (!all.length) {
+    box.innerHTML = `<div class="empty">${ic('users', 'lg')}<h3>İlk öğrencinizi ekleyin</h3><p>Öğrencileri tek tek ekleyebilir ya da sınıf listenizi (e-Okul'dan kopyaladığınız liste dahil) tek seferde yapıştırabilirsiniz.</p><div class="head-actions" style="justify-content:center"><button class="btn primary" type="button" data-act="student-new">${ic('plus')}Öğrenci ekle</button><button class="btn" type="button" data-act="student-bulk">Liste yapıştır</button></div></div>`;
+    return;
+  }
+  const list = filteredStudents();
+  if (!list.length) { box.innerHTML = '<div class="empty"><h3>Eşleşen öğrenci yok</h3><p>Aramayı veya filtreleri değiştirin.</p><button class="btn sm" type="button" data-act="clear-filters">Filtreleri temizle</button></div>'; return; }
+  box.innerHTML = '<div class="shead" aria-hidden="true"><span>ÖĞRENCİ</span><span>SINIF</span><span>DEVAMSIZLIK</span><span>DURUM</span><span>SON GÖZLEM</span></div>' + list.map(s => {
+    const lo = lastObs(s), dev = Number(s.devamsizlik) || 0, d = DURUM[s.durum] ? s.durum : 'iyi';
+    return `<button type="button" class="srow" data-act="student-open" data-id="${esc(s.id)}">
+      <span class="s-name"><span class="avatar ${d}">${esc(initials(s.ad))}</span><span class="nm"><b>${esc(s.ad || 'Adsız öğrenci')}</b><small>No ${esc(s.no || '—')}${s.ornek ? ' · <em class="tag">örnek</em>' : ''}</small></span></span>
+      <span class="s-class">${esc(s.sinif || '—')}</span>
+      <span class="s-abs ${dev >= 10 ? 'b' : dev >= 5 ? 'w' : ''}"><span class="ml">Devamsızlık </span>${nf(dev)} gün</span>
+      <span class="s-state"><span class="pill ${d}">${DURUM[d]}</span></span>
+      <span class="s-last">${lo ? `<time datetime="${esc(lo.t)}">${fShort(pd(lo.t))}</time>${esc(lo.m)}` : '<span class="muted">Henüz gözlem notu yok</span>'}</span>
+    </button>`;
+  }).join('');
+}
+function normClass(v) {
+  v = String(v || '').trim(); if (!v) return '';
+  const m = v.match(/^(\d{1,2})\s*[-/. ]?\s*([A-Za-zÇĞİÖŞÜçğıöşü]{1,3})$/);
+  return m ? m[1] + '-' + upper(m[2]) : upper(v);
+}
+function openStudent(id) {
+  const s = id ? S.ogrenciler.find(x => x.id === id) : null;
+  drawerSid = s ? s.id : null;
+  const d = s && DURUM[s.durum] ? s.durum : 'iyi';
+  $('#drawer').innerHTML = `
+  <div class="dr-head"><div><p class="eyebrow">${s ? 'ÖĞRENCİ KARTI' : 'YENİ ÖĞRENCİ'}</p><h2 id="drawerTitle">${s ? esc(s.ad || 'Adsız öğrenci') : 'Öğrenci ekle'}</h2></div><button class="icon-btn" type="button" data-act="close" aria-label="Kapat">${ic('close')}</button></div>
+  <form id="studentForm" class="form" novalidate>
+    <label class="field"><span>Ad Soyad</span><input class="inp" id="sf-ad" autocomplete="off" value="${esc(s ? s.ad : '')}" placeholder="ör. Elif YILMAZ"></label>
+    <div class="row2">
+      <label class="field"><span>Sınıf / Şube</span><input class="inp" id="sf-sinif" list="dl-sinif" autocomplete="off" placeholder="ör. 9-A" value="${esc(s ? s.sinif || '' : S.f.sinif)}"></label>
+      <label class="field"><span>Okul No</span><input class="inp" id="sf-no" inputmode="numeric" autocomplete="off" value="${esc(s ? s.no || '' : '')}"></label>
+    </div>
+    <fieldset class="field"><legend>Takip durumu</legend><div class="steps durum" id="sf-durum">${DURUM_FORM.map(k => `<button type="button" data-act="pick" data-v="${k}" aria-pressed="${k === d}">${DURUM[k]}</button>`).join('')}</div></fieldset>
+    <div class="field"><span id="sf-dev-l">Devamsızlık (gün)</span><div class="stepper"><button class="icon-btn" type="button" data-act="dev-step" data-v="-0.5" aria-label="Yarım gün azalt">−</button><input class="inp" id="sf-dev" type="number" min="0" step="0.5" value="${Number(s ? s.devamsizlik : 0) || 0}" aria-labelledby="sf-dev-l"><button class="icon-btn" type="button" data-act="dev-step" data-v="0.5" aria-label="Yarım gün artır">+</button></div></div>
+    <p class="form-err" id="sf-err" hidden></p>
+    <div class="form-actions"><button class="btn primary" type="submit">${s ? 'Değişiklikleri kaydet' : 'Öğrenciyi ekle'}</button><button class="btn ghost" type="button" data-act="close">${s ? 'Kapat' : 'Bitti'}</button></div>
+  </form>
+  ${s ? `<section class="dr-sec" aria-labelledby="h-obs"><h3 id="h-obs">Gözlem notları</h3>
+    <form id="obsForm" class="obs-form"><label class="sr" for="obs-text">Yeni gözlem notu</label><textarea class="inp" id="obs-text" rows="3" placeholder="Derse katılım, ödev, davranış, veli görüşmesi…"></textarea>
+    <div class="obs-row"><label class="sr" for="obs-date">Tarih</label><input class="inp" type="date" id="obs-date" value="${iso(today0())}"><button class="btn primary sm" type="submit">Not ekle</button></div></form>
+    <ol class="obs-list" id="obsList"></ol></section>
+  <section class="dr-sec" aria-labelledby="h-sp"><h3 id="h-sp">Projeleri</h3><div class="sp-list" id="spList"></div></section>
+  <div class="danger"><button class="btn danger-ghost sm" type="button" data-act="student-del" data-id="${esc(s.id)}">${ic('trash')}Öğrenciyi sil</button></div>` : ''}`;
+  if (s) renderDrawerLists();
+  showDrawer(s ? '#obs-text' : '#sf-ad');
+}
+function renderDrawerLists() {
+  const s = S.ogrenciler.find(x => x.id === drawerSid);
+  const ol = $('#obsList'); if (!s || !ol) return;
+  const obs = (s.gozlemler || []).slice().sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
+  ol.innerHTML = obs.length ? obs.map(g => `<li><time datetime="${esc(g.t)}">${fLong(pd(g.t))}</time><p>${esc(g.m)}</p><button class="icon-btn" type="button" data-act="obs-del" data-id="${esc(g.id)}" aria-label="Notu sil">${ic('trash')}</button></li>`).join('')
+    : '<li><p class="muted">Henüz gözlem notu yok. İlk notu yukarıdan ekleyin.</p></li>';
+  const ps = S.projeler.filter(p => (p.ekip || []).includes(s.id));
+  $('#spList').innerHTML = ps.length ? ps.map(p => { const pr = PROGRAMS[p.program] || PROGRAMS.teknofest; return `<button class="sp-chip ${pr.cls}" type="button" data-act="project-open" data-id="${esc(p.id)}"><span class="pbadge sm">${pr.kisa}</span><span>${esc(p.baslik || 'Adsız proje')}</span></button>`; }).join('')
+    : '<p class="muted" style="font-size:14px">Bu öğrenci henüz bir proje ekibinde değil. Proje Atölyesi\'nden ekibe ekleyebilirsiniz.</p>';
+}
+function saveStudent() {
+  const ad = $('#sf-ad').value.trim(), err = $('#sf-err');
+  if (!ad) { err.textContent = 'Öğrencinin adını yazın.'; err.hidden = false; $('#sf-ad').focus(); return; }
+  const pressed = $('#sf-durum [aria-pressed="true"]');
+  const dev = Math.max(0, Math.round((parseFloat(String($('#sf-dev').value).replace(',', '.')) || 0) * 2) / 2);
+  const data = { ad, sinif: normClass($('#sf-sinif').value), no: $('#sf-no').value.trim(), durum: pressed ? pressed.dataset.v : 'iyi', devamsizlik: dev, guncelleme: Date.now() };
+  if (drawerSid) { write('ogrenciler', drawerSid, 'update', data); closeAll(); toast('Öğrenci kaydedildi'); return; }
+  write('ogrenciler', newId('ogrenciler'), 'set', Object.assign(data, { gozlemler: [], olusturma: Date.now() }));
+  toast(`${ad} eklendi`);
+  err.hidden = true; $('#sf-ad').value = ''; $('#sf-no').value = ''; $('#sf-dev').value = 0;
+  $$('#sf-durum button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === 'iyi')));
+  $('#sf-sinif').value = data.sinif; $('#sf-ad').focus();
+}
+function addObs() {
+  const s = S.ogrenciler.find(x => x.id === drawerSid); if (!s) return;
+  const m = $('#obs-text').value.trim(); if (!m) { $('#obs-text').focus(); return; }
+  const t = $('#obs-date').value || iso(today0());
+  write('ogrenciler', s.id, 'update', { gozlemler: (s.gozlemler || []).concat([{ id: rid(), t, m }]), guncelleme: Date.now() });
+  $('#obs-text').value = '';
+}
+function delObs(gid) {
+  const s = S.ogrenciler.find(x => x.id === drawerSid); if (!s) return;
+  write('ogrenciler', s.id, 'update', { gozlemler: (s.gozlemler || []).filter(g => g.id !== gid), guncelleme: Date.now() });
+}
+
+function openBulk() {
+  modal(`<div class="m-head"><div><h2 id="modalTitle">Sınıf listesi yapıştır</h2><p class="sub">Her satıra bir öğrenci yazın. Numara satırın başında ya da sonunda olabilir; e-Okul'dan kopyaladığınız tablo da olur.</p></div><button class="icon-btn" type="button" data-act="close" aria-label="Kapat">${ic('close')}</button></div>
+  <form id="bulkForm" class="form" novalidate>
+    <label class="field"><span>Sınıf / Şube</span><input class="inp" id="bk-sinif" list="dl-sinif" autocomplete="off" placeholder="ör. 9-A" value="${esc(S.f.sinif)}"></label>
+    <label class="field"><span>Öğrenciler</span><textarea class="inp" id="bk-text" rows="9" placeholder="214 Elif YILMAZ&#10;231 Mert KAYA&#10;245 Zeynep DEMİR"></textarea></label>
+    <p class="bk-prev" id="bk-prev">Henüz satır yok.</p>
+    <div class="form-actions"><button class="btn primary" type="submit" id="bk-btn" disabled>Öğrencileri ekle</button><button class="btn ghost" type="button" data-act="close">Vazgeç</button></div>
+  </form>`, '#bk-text');
+}
+function fixCase(name) {
+  if (name !== upper(name)) return name;
+  const w = name.split(/\s+/);
+  return w.map((x, i) => i === w.length - 1 && w.length > 1 ? x : upper(x[0]) + lower(x.slice(1))).join(' ');
+}
+function parseBulk(text) {
+  return String(text || '').split(/\r?\n/).map(line => {
+    line = line.trim(); if (!line) return null;
+    let no = '', name = '';
+    const cells = line.split(/\t|;|,/).map(c => c.trim()).filter(Boolean);
+    if (cells.length > 1) {
+      const nums = cells.filter(c => /^\d+$/.test(c));
+      no = nums.length ? nums[nums.length - 1] : '';
+      name = cells.filter(c => !/^\d+$/.test(c)).join(' ');
+    } else {
+      let m = line.match(/^(\d+)[\s.)\-:]+(.+)$/);
+      if (m) { no = m[1]; name = m[2]; }
+      else if ((m = line.match(/^(.+?)\s+(\d+)$/))) { name = m[1]; no = m[2]; }
+      else name = line;
+    }
+    name = name.replace(/\s+/g, ' ').trim();
+    return name && /[A-Za-zÇĞİÖŞÜçğıöşü]/.test(name) ? { ad: fixCase(name), no } : null;
+  }).filter(Boolean);
+}
+function updateBulkPreview() {
+  const rows = parseBulk($('#bk-text').value), btn = $('#bk-btn');
+  const sinif = normClass($('#bk-sinif').value);
+  $('#bk-prev').textContent = rows.length ? `${rows.length} öğrenci eklenecek${sinif ? ' · ' + sinif : ''}. İlk satır: ${rows[0].ad}${rows[0].no ? ' (No ' + rows[0].no + ')' : ''}` : 'Henüz satır yok.';
+  btn.disabled = !rows.length;
+}
+async function saveBulk() {
+  const rows = parseBulk($('#bk-text').value); if (!rows.length) return;
+  const sinif = normClass($('#bk-sinif').value), btn = $('#bk-btn');
+  btn.disabled = true;
+  let ok = 0;
+  for (const r of rows) {
+    btn.textContent = `Ekleniyor ${ok + 1}/${rows.length}`;
+    try { await write('ogrenciler', newId('ogrenciler'), 'set', { ad: r.ad, no: r.no, sinif, durum: 'iyi', devamsizlik: 0, gozlemler: [], olusturma: Date.now(), guncelleme: Date.now() }); ok++; }
+    catch (e) { break; }
+  }
+  closeAll();
+  if (ok) toast(`${ok} öğrenci eklendi`);
+}
+async function deleteExamples(col) {
+  const ids = S[col].filter(x => x.ornek).map(x => x.id);
+  for (const id of ids) { try { await write(col, id, 'delete'); } catch (e) { return; } }
+  if (col === 'projeler' && ids.includes(S.openProject)) { S.openProject = null; renderEditor(); }
+  toast('Örnek kayıtlar silindi');
+}
+
+/* ── Projeler ── */
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+const STEPS = {};
+const ARRS = ['uyeler', 'isPaketleri', 'cizelge'];
+const currentProject = () => S.projeler.find(p => p.id === S.openProject) || null;
+const progOf = p => PROGRAMS[p && p.program] || PROGRAMS.teknofest;
+const getPath = (o, path) => String(path).split('.').reduce((a, k) => (a == null ? undefined : a[k]), o);
+const setPath = (o, path, v) => { const ks = String(path).split('.'); let c = o; ks.slice(0, -1).forEach(k => { if (!c[k] || typeof c[k] !== 'object') c[k] = {}; c = c[k]; }); c[ks[ks.length - 1]] = v; };
+const nest = (path, v) => path.reduceRight((acc, k) => ({ [k]: acc }), v);
+const fv = (p, f) => { const v = getPath(p, f); return v == null ? '' : v; };
+const filled = v => !!String(v == null ? '' : v).trim();
+const thisMonth = () => iso(today0()).slice(0, 7);
+const addMonth = (ym, n) => { const [y, m] = String(ym).split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+const monthLabel = ym => { const [y, m] = String(ym || '').split('-').map(Number); return y && m ? `${AYLAR[m - 1]} ${y}` : ''; };
+function tMonths(p) { const n = Math.min(12, Math.max(2, Number(p.tSure) || 6)); const b = /^\d{4}-\d{2}$/.test(p.tBas || '') ? p.tBas : thisMonth(); return Array.from({ length: n }, (_, i) => addMonth(b, i)); }
+const docName = p => `${progOf(p).ad} - ${String(p.baslik || 'Adsız proje').replace(/[\\/:*?"<>|]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 90)}.docx`;
+
+function secFilled(p, b) {
+  if (b.tip === 'isPaketleri') return (p.isPaketleri || []).some(r => filled(r.ad) && (filled(r.alt) || filled(r.bas)));
+  if (b.tip === 'swot') return ['s', 'w', 'o', 't'].every(k => filled(getPath(p, 'swot.' + k)));
+  if (b.tip === 'cizelge') return (p.cizelge || []).some(r => (r.aylar || []).length);
+  return filled((p.bolumler || {})[b.k]);
+}
+function progressOf(p) { const bs = progOf(p).bolumler; return { filled: bs.filter(b => secFilled(p, b)).length, total: bs.length }; }
+function dueInfo(s) {
+  if (!s) return null;
+  const d = diffDays(today0(), pd(s));
+  return d > 1 ? { t: `${d} gün kaldı`, c: d <= 7 ? 'w' : '' } : d === 1 ? { t: 'Yarın son gün', c: 'w' } : d === 0 ? { t: 'Bugün son gün', c: 'b' } : { t: 'Süresi doldu', c: 'b' };
+}
+function teamOf(p) { return (p.ekip || []).map(id => S.ogrenciler.find(s => s.id === id)).filter(Boolean); }
+
+function renderProjectList() {
+  const counts = {}; S.projeler.forEach(p => { counts[p.program] = (counts[p.program] || 0) + 1; });
+  $('#programFilter').innerHTML = [['', 'Tümü', S.projeler.length]].concat(PROG_KEYS.map(k => [k, PROGRAMS[k].ad, counts[k] || 0]))
+    .map(([v, l, c]) => `<button type="button" class="pf" data-act="pf" data-v="${v}" aria-pressed="${S.pf === v}">${l} <span class="muted">${c}</span></button>`).join('');
+  const box = $('#projectList');
+  if (!S.loaded.projeler) { box.innerHTML = '<p class="empty compact">Yükleniyor…</p>'; return; }
+  const list = S.projeler.filter(p => !S.pf || p.program === S.pf).sort((a, b) => (b.guncelleme || 0) - (a.guncelleme || 0));
+  const banner = S.projeler.some(p => p.ornek) ? '<div class="banner"><span>Örnek projeler var.</span><button class="btn sm" type="button" data-act="del-ex" data-col="projeler">Örnekleri sil</button></div>' : '';
+  if (!list.length) { box.innerHTML = banner + `<div class="empty compact"><p>${S.projeler.length ? 'Bu programda proje yok.' : 'Henüz proje yok. Sağdan TEKNOFEST ya da TÜBİTAK seçerek başlayın.'}</p></div>`; return; }
+  box.innerHTML = banner + list.map(p => {
+    const pr = progOf(p), g = progressOf(p), due = dueInfo(p.sonTarih), st = PDURUM_AD[p.durum] ? p.durum : 'fikir';
+    const alt = [p.kategori || p.tematik || p.anaAlan, p.ornek ? 'örnek' : ''].filter(Boolean).join(' · ') || pr.ad;
+    return `<button type="button" class="pitem ${pr.cls}" data-act="project-open" data-id="${esc(p.id)}" aria-current="${p.id === S.openProject}">
+      <span class="pbadge">${pr.kisa}</span>
+      <span class="pmain"><b>${esc(p.baslik || 'Adsız proje')}</b><small>${esc(alt)}</small>
+      <span class="pmeta"><span class="pstate ${st}">${PDURUM_AD[st]}</span>${due ? `<span class="${due.c}">${due.t}</span>` : ''}<span>${g.filled}/${g.total}</span></span>
+      <span class="pbar"><i style="width:${Math.round(g.filled / g.total * 100)}%"></i></span></span>
+    </button>`;
+  }).join('');
+}
+function renderMiniProjects() {
+  const box = $('#miniProjects');
+  const yeni = `<div class="mp-new">${PROG_KEYS.map(k => `<button class="btn sm ${PROGRAMS[k].cls}" type="button" data-act="project-create" data-program="${k}"><span class="pbadge sm">${PROGRAMS[k].kisa}</span>${PROGRAMS[k].ad} projesi hazırla</button>`).join('')}</div>`;
+  if (!S.loaded.projeler) { box.innerHTML = yeni + '<p class="empty compact">Yükleniyor…</p>'; return; }
+  const act = S.projeler.filter(p => p.durum !== 'sonuclandi')
+    .sort((a, b) => String(a.sonTarih || '9999').localeCompare(String(b.sonTarih || '9999')) || (b.guncelleme || 0) - (a.guncelleme || 0)).slice(0, 4);
+  box.innerHTML = yeni + (act.length ? act.map(p => {
+    const pr = progOf(p), due = dueInfo(p.sonTarih), g = progressOf(p);
+    return `<button type="button" class="mp ${pr.cls}" data-act="project-open" data-id="${esc(p.id)}"><span class="pbadge">${pr.kisa}</span><span class="mp-t"><b>${esc(p.baslik || 'Adsız proje')}</b><small class="${due ? due.c : ''}">${due ? due.t : PDURUM_AD[p.durum] || 'Fikir'} · ${g.filled}/${g.total} bölüm</small></span></button>`;
+  }).join('') : '<p class="empty compact">Devam eden proje yok.</p>');
+}
+
+function homeHTML() {
+  return `<div class="home">
+    <div class="home-head"><h2>Hangi proje için hazırlık yapıyorsunuz?</h2><p class="sub">Programı seçin. Takım ve proje bilgilerini girin, metni Claude ile birlikte yazın, şablona uygun Word dosyasını indirin.</p></div>
+    <div class="prog-cards">${PROG_KEYS.map(k => { const p = PROGRAMS[k]; return `<article class="card prog ${p.cls}">
+      <div class="prog-top"><span class="pbadge">${p.kisa}</span><h3>${p.ad}</h3></div>
+      <p>${esc(p.ozet)}</p>
+      <ol class="prog-steps">${p.adimlar.map(a => `<li>${esc(a)}</li>`).join('')}</ol>
+      <p class="secs-list">Dayanak: ${esc(p.kaynak)}</p>
+      <button class="btn primary" type="button" data-act="project-create" data-program="${k}">${ic('plus')}${p.ad} projesi hazırla</button></article>`; }).join('')}</div>
+    <section class="card ideas ai-block" aria-labelledby="h-ideas">
+      <h2 id="h-ideas">${ic('spark')}Claude ile fikir üret</h2>
+      <p class="sub">Program, öğrenci düzeyi ve ilgi alanını seçin; dört uygulanabilir proje fikri gelsin. Beğendiğiniz fikirle doğrudan başlayın.</p>
+      <form id="ideaForm" class="ideas-form" novalidate>
+        <label class="field"><span>Program</span><select class="inp" id="ig-prog">${PROG_KEYS.map(k => `<option value="${k}">${PROGRAMS[k].ad}</option>`).join('')}</select></label>
+        <label class="field"><span>Öğrenci düzeyi</span><select class="inp" id="ig-duzey"><option>Ortaokul</option><option>Lise</option><option>İlkokul</option></select></label>
+        <label class="field"><span>Konu / ilgi alanı <em>(isteğe bağlı)</em></span><input class="inp" id="ig-konu" autocomplete="off" placeholder="ör. su tasarrufu, yapay zekâ"></label>
+        <button class="btn primary" type="submit" id="ig-btn">${ic('spark')}Fikir üret</button>
+      </form>
+      <div id="ideaOut"></div>
+    </section>
+  </div>`;
+}
+
+/* Form alanları: data-f yolu proje belgesindeki alanı gösterir (ör. notlar.problem) */
+function fInput(p, f, label, o) {
+  o = o || {};
+  const id = 'f-' + f.replace(/\./g, '-');
+  return `<label class="field"><span>${label}${o.opt ? ' <em>(isteğe bağlı)</em>' : ''}</span><input class="inp" id="${id}" data-f="${f}" type="${o.type || 'text'}"${o.list ? ` list="${o.list}"` : ''}${o.min != null ? ` min="${o.min}"` : ''}${o.max != null ? ` max="${o.max}"` : ''} autocomplete="off" value="${esc(fv(p, f))}" placeholder="${esc(o.ph || '')}">${o.help ? `<small class="help">${o.help}</small>` : ''}</label>`;
+}
+function fText(p, f, label, o) {
+  o = o || {};
+  const id = 'f-' + f.replace(/\./g, '-');
+  return `<label class="field"><span>${label}${o.opt ? ' <em>(isteğe bağlı)</em>' : ''}</span><textarea class="inp" id="${id}" data-f="${f}" rows="${o.rows || 3}" placeholder="${esc(o.ph || '')}">${esc(fv(p, f))}</textarea></label>`;
+}
+function fSelect(p, f, label, opts) {
+  const id = 'f-' + f.replace(/\./g, '-'), v = fv(p, f);
+  return `<label class="field"><span>${label}</span><select class="inp" id="${id}" data-f="${f}"><option value="">Seçin</option>${opts.map(o => `<option${o === v ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+}
+
+function wcInfo(b, v) {
+  const w = wordsOf(v);
+  if (b.sayac) { const n = String(v || '').split(/[,;\n]/).map(s => s.trim()).filter(Boolean).length; return { t: `${n} anahtar kelime · en fazla 5`, cls: n > 5 ? 'w' : n ? 'ok' : '' }; }
+  if (b.aralik) { const [a, z] = b.aralik; return { t: `${nf(w)} kelime · ${a}–${z} arası olmalı`, cls: !w ? '' : (w < a || w > z) ? 'w' : 'ok' }; }
+  return { t: `${nf(w)} kelime${b.kelime ? ' · önerilen ~' + b.kelime : ''}`, cls: b.kelime && w > b.kelime * 2 ? 'w' : '' };
+}
+function secHTML(p, b, i) {
+  const head = inner => `<div class="sec-head"><span class="sec-no">${i + 1}</span><div class="sec-ht">${inner}</div></div>`;
+  const hint = `<p class="hint">${esc(b.ipucu)}${b.sinir ? ` <b>${esc(b.sinir)}.</b>` : ''}</p>`;
+  if (b.tip) {
+    const box = b.tip === 'swot'
+      ? `<div class="swot">${[['s', 'Güçlü Yönler (S)', 'Projenin en iyi yönleri; sizi diğerlerinden farklı kılan özellikler.'], ['w', 'Zayıf Yönler (W)', 'Geliştirilmesi gereken, eksik ya da yetersiz kalan noktalar.'], ['o', 'Fırsatlar (O)', 'Projeyi büyütecek teknolojiler, destekler ve imkânlar.'], ['t', 'Tehditler (T)', 'Başarıyı engelleyebilecek dış etkenler.']].map(([k, l, h]) => `<label class="field ${k}"><span>${l}</span><textarea class="inp" data-f="swot.${k}" rows="4" placeholder="${esc(h)}">${esc(fv(p, 'swot.' + k))}</textarea></label>`).join('')}</div><p class="help">Her maddeyi "- " ile başlayan ayrı bir satıra yazın.</p>`
+      : `<div id="tbl-${b.tip}"></div>`;
+    return `<li class="sec ${secFilled(p, b) ? 'filled' : ''}" id="s-${b.k}">${head(`<div class="sec-head-row"><h3 id="h-${b.k}">${esc(b.ad)}</h3><button type="button" class="btn ai sm ai-only" data-act="ai-table" data-v="${b.tip}">${ic('spark')}<span>Claude ile öner</span></button></div>${hint}`)}<div class="sec-body">${box}</div></li>`;
+  }
+  const v = (p.bolumler || {})[b.k] || '', info = wcInfo(b, v);
+  return `<li class="sec ${filled(v) ? 'filled' : ''}" id="s-${b.k}">${head(`<h3 id="h-${b.k}">${esc(b.ad)}</h3>${hint}`)}
+    <div class="sec-body">
+      <textarea class="sec-text${b.sayac ? ' short' : ''}" id="sec-${b.k}" data-f="bolumler.${b.k}" data-k="${b.k}" aria-labelledby="h-${b.k}" rows="${b.sayac ? 1 : 4}">${esc(v)}</textarea>
+      <div class="sec-foot"><span class="wc ${info.cls}" id="wc-${b.k}">${info.t}</span>${b.ai === false ? '' : `<button type="button" class="btn ai sm ai-only" data-act="ai" data-k="${b.k}">${ic('spark')}<span>${filled(v) ? 'Claude ile geliştir' : 'Claude ile taslak yaz'}</span></button>`}</div>
+      <div class="ai-box" id="ai-${b.k}" hidden></div>
+    </div></li>`;
+}
+
+/* ── Sihirbaz adımları ── */
+const aiBarHTML = () => `<div class="ai-bar ai-only"><p><b>Claude ile yaz:</b> 1. ve 2. adımdaki bilgilere göre boş bölümleri ve tabloları sırayla doldurur. Dolu bölümlere dokunmaz; her bölümü sonra tek tek geliştirebilirsiniz.</p><span class="fill-prog" id="fillProg"></span><button class="btn primary sm" type="button" data-act="fill-all" id="fillBtn">${ic('spark')}Boş bölümleri yaz</button></div>`;
+const dlCard = (p, desc) => `<div class="dl-card"><span class="doc-big">${ic('doc')}<small>DOCX</small></span><div><b>${esc(docName(p))}</b><small>${esc(desc)}</small></div><button class="btn primary big" type="button" data-act="docx">${ic('down')}Word dosyasını indir</button></div><p class="form-err" id="dlErr" hidden></p>`;
+const STEP_HTML = {
+  teknofest: [
+    p => `<section class="wz-sec"><h3>Yarışma</h3><div class="g3">${fInput(p, 'kategori', 'Yarışma kategorisi', { list: 'dl-kat-teknofest', ph: 'ör. Eğitim Teknolojileri' })}${fSelect(p, 'seviye', 'Takım eğitim seviyesi', PROGRAMS.teknofest.seviyeler)}${fInput(p, 'okul', 'Okul / kurum', { ph: 'ör. Atatürk Ortaokulu' })}</div></section>
+      <section class="wz-sec"><h3>Takım bilgileri</h3><div class="g3">${fInput(p, 'takimAdi', 'Takım adı', { ph: 'ör. Yeşil Damla' })}${fInput(p, 'takimId', 'Takım ID', { opt: true, ph: "KYS'den" })}${fInput(p, 'basvuruId', 'Başvuru ID', { opt: true, ph: "KYS'den" })}</div>
+      <p class="wz-note">Takım ID ve Başvuru ID, T3 KYS'de başvuru tamamlanınca "Başvurunuz Alındı" sayfasında görünür. Şimdilik boş bırakıp sonra ekleyebilirsiniz.</p></section>
+      <section class="wz-sec"><h3>Takım yapısı</h3><div class="g2">${fInput(p, 'danisman', 'Takım danışmanı')}${fInput(p, 'danismanBilgi', 'Danışmanın görev / eğitim bilgisi', { ph: 'ör. Fen Bilimleri öğretmeni' })}</div>
+      <div id="tbl-uyeler"></div>
+      <p class="wz-note">Kaptanı işaretleyin; şablona göre kaptan ayrıca üye olarak yazılmaz. Takım tanıtımı en fazla 1 sayfadır. Danışman, KYS'de takıma kendini "danışman" rolüyle eklemelidir.</p></section>`,
+    p => `<p class="wz-note">Bu bilgiler Claude'un yazacağı metnin temelini oluşturur. Kısa notlar yeterli; ne kadar somut yazarsanız metin o kadar projenize özgü olur.</p>
+      <section class="wz-sec"><h3>Proje</h3><div class="g3">${fInput(p, 'konu', 'Proje konusu (kapakta yazar)', { ph: 'ör. Toprak nemine göre otomatik sulama' })}${fSelect(p, 'cozumTuru', 'Çözüm türü', COZUM_TURU)}${fSelect(p, 'prototipDurum', 'Prototip durumu', PROTOTIP_DURUM)}</div>
+      ${fText(p, 'fikir', 'Proje fikri / çıkış noktası', { rows: 2, ph: 'Fikri birkaç cümleyle anlatın.' })}</section>
+      <section class="wz-sec"><h3>İçerik notları</h3><div class="g2">
+      ${fText(p, 'notlar.problem', 'Problem: neyi gözlemlediniz, kimi etkiliyor?')}
+      ${fText(p, 'notlar.cozum', 'Çözüm fikriniz nasıl çalışacak?')}
+      ${fText(p, 'notlar.teknoloji', 'Kullanılacak teknoloji, yazılım ve malzemeler')}
+      ${fText(p, 'notlar.hedef', 'Hedef kitle: kimler kullanacak?')}
+      ${fText(p, 'notlar.fark', 'Benzer çözümlerden farkı, yerli ve özgün yönü')}
+      ${fText(p, 'notlar.durum', 'Şu ana kadar neler yapıldı?', { opt: true })}</div></section>
+      <section class="wz-sec"><h3>Takvim ve kapanış</h3><div class="g3">${fInput(p, 'bas', 'Proje başlangıcı', { type: 'month' })}${fInput(p, 'bit', 'Proje bitişi', { type: 'month' })}${fInput(p, 'slogan', 'Slogan (Teşekkürler sayfası)', { opt: true, ph: 'ör. Her damla hesaplı' })}</div></section>`,
+    p => `${aiBarHTML()}<ol class="secs">${progOf(p).bolumler.map((b, i) => secHTML(p, b, i)).join('')}</ol>`,
+    p => `${dlCard(p, 'TEKNOFEST proje sunum şablonunun sırasıyla: kapak, takım tanıtımı, sekiz bölüm, proje takvimi, SWOT ve teşekkür sayfası. Her bölüm yeni sayfadan başlar.')}
+      <p class="wz-note">TEKNOFEST'e sunum, şablondaki slaytlarla hazırlanıp PDF olarak yüklenir. Bu Word dosyası slaytların içeriğini aynı sırayla ve sayfa sınırlarına göre hazırlar; metni şablona aktarırken kırmızı yer tutucuları doldurun.</p>
+      <section class="wz-sec"><h3>Kontrol listesi</h3><div id="checksBox">${checksHTML(checksTeknofest(p))}</div></section>
+      <div class="cols2">
+        <section class="wz-sec"><h3>KYS başvuru adımları</h3><ol class="steps-list">
+          <li><b>Giriş:</b> t3kys.com'da profil oluşturun ya da giriş yapın; ana sayfadaki TEKNOFEST 2026 başvuru kutucuğundan yarışmayı seçin. Şartnameler: teknofest.org/tr/yarismalar</li>
+          <li><b>Profil:</b> Kişisel bilgileri gözden geçirip güncelleyin.</li>
+          <li><b>Takım:</b> Mevcut takımı seçin ya da "Yeni Takım" ile oluşturun. Okulu temsilen katılımda takım türü "Okul" seçilir.</li>
+          <li><b>Takım işlemleri:</b> Üyeleri TC/Pasaport No ve e-posta ile davet edin; danışman kendini "danışman" rolüyle ekler.</li>
+          <li><b>Form:</b> Başvuru formunu eksiksiz doldurup gönderin; başvuru süresince güncelleyebilirsiniz.</li>
+          <li><b>Özet:</b> Takım ID ve Başvuru ID'yi 1. adımdaki alanlara yazın.</li></ol></section>
+        <section class="wz-sec"><h3>Sunum dosyası kuralları</h3><ul class="steps-list">
+          <li>Şablonun sayfa düzeni değiştirilmez; kırmızı açıklamalar silinip yerine takımın içeriği yazılır.</li>
+          <li>Kapak dahil en fazla <b>16 sayfa</b>; bölümün sayfa sınırı aşılırsa fazla her sayfa için <b>3 ceza puanı</b>.</li>
+          <li>Dosya <b>PDF</b> olarak, en fazla <b>75 MB</b> yüklenir.</li>
+          <li>Takım adı, ID, başvuru ID, kategori ve seviye bilgisi her sayfanın altında aynı yerde durur.</li>
+          <li>Kaynak olarak video ya da Drive bağlantısı eklenmez; sunumu yalnızca takım üyeleri yapar.</li></ul></section>
+      </div>
+      <div class="row-actions"><button class="btn sm" type="button" data-act="project-copy">${ic('copy')}Metni kopyala</button></div>`
+  ],
+  tubitak: [
+    p => `<section class="wz-sec"><h3>Program ve alan</h3><div class="g3">${fSelect(p, 'alt', 'Program', PROGRAMS.tubitak.alt)}${fInput(p, 'anaAlan', 'Proje ana alanı', { list: 'dl-ana', ph: 'ör. Kimya' })}${fInput(p, 'tematik', 'Proje tematik alanı', { list: 'dl-tematik', ph: 'ör. Sıfır Atık ve Geri Dönüşüm' })}</div>
+      <p class="wz-note">2204-B rehberine göre proje 10 ana alandan birinde ve listedeki tematik alanlardan birini kapsayacak şekilde hazırlanır. Proje adı tek cümle ve en fazla 15 kelime olmalıdır; adı yukarıdaki başlık alanına yazın.</p></section>
+      <section class="wz-sec"><h3>Ekip</h3><div class="g2">${fInput(p, 'danisman', 'Danışman öğretmen')}</div><div class="field"><span>Proje öğrencileri</span><div class="team" id="edTeam"></div></div>
+      <p class="wz-note">Şablonda isim alanı olmadığı için ekip bilgisi rapora yazılmaz; yalnızca sizin takibiniz içindir.</p></section>`,
+    p => `<p class="wz-note">Bu bilgiler Claude'un yazacağı metnin temelini oluşturur. Rehbere göre en önemli kriter, projeye kaynak olan fikrin öğrencilere ait olmasıdır; notları öğrencilerinizle birlikte yazın.</p>
+      <section class="wz-sec"><h3>Araştırma</h3>${fText(p, 'fikir', 'Proje fikri / çıkış noktası', { rows: 2 })}
+      <div class="g2">${fText(p, 'soru', 'Araştırma sorusu (problem)')}${fText(p, 'hipotez', 'Hipotez', { opt: true })}</div>
+      <div class="g2">${fSelect(p, 'desen', 'Araştırma deseni', DESENLER)}${fText(p, 'orneklem', 'Çalışma grubu, örneklem ya da çalışma sahası', { rows: 2 })}</div>
+      ${fText(p, 'malzeme', 'Veri toplama araçları, deney düzeneği ve malzemeler')}
+      ${fText(p, 'notlar.durum', 'Şu ana kadar neler yapıldı, elde veri var mı?', { opt: true })}</section>
+      <section class="wz-sec"><h3>İş-zaman çizelgesinin aralığı</h3><div class="g3">${fInput(p, 'tBas', 'Başlangıç ayı', { type: 'month' })}${fInput(p, 'tSure', 'Süre (ay)', { type: 'number', min: 2, max: 12 })}</div></section>`,
+    p => `${aiBarHTML()}<ol class="secs">${progOf(p).bolumler.map((b, i) => secHTML(p, b, i)).join('')}</ol>
+      <section class="wz-sec yz"><div class="sec-head-row"><h3>Yapay Zekâ Araçları Kullanım Beyanı</h3><button class="btn sm" type="button" data-act="yz-fill">Claude kullanımına göre doldur</button></div>
+      <p class="hint">Şablon, üretken yapay zekâ kullanıldıysa bu dört başlığın doldurulmasını istiyor; raporda Özet'in önünde yer alır. <span id="yzInfo"></span></p>
+      <div class="g2">${fText(p, 'yz.arac', 'Kullanılan araçlar', { rows: 2, ph: 'ör. Claude (Anthropic), Ekim 2026' })}${fText(p, 'yz.amac', 'Kullanım amacı', { rows: 2, ph: 'ör. Taslak metin oluşturma, dil düzeltme' })}${fText(p, 'yz.kapsam', 'Kullanım kapsamı', { rows: 2, ph: 'ör. Giriş ve Yöntem bölümlerinde' })}${fText(p, 'yz.mudahale', 'İnsan müdahalesi', { rows: 2, ph: 'ör. Çıktıların yarısı yeniden yazıldı, kaynaklar ayrıca doğrulandı' })}</div></section>`,
+    p => `${dlCard(p, 'TÜBİTAK proje yazma şablonuna göre: Times New Roman 12 punto, 2,5 cm kenar boşluğu, tek satır aralığı, iki yana yaslı. Alan bilgileri, yapay zekâ beyanı, özet ve anahtar kelimeler, tüm bölümler ve iş-zaman çizelgesi.')}
+      <section class="wz-sec"><h3>Kontrol listesi</h3><div id="checksBox">${checksHTML(checksTubitak(p))}</div></section>
+      <div class="cols2">
+        <section class="wz-sec"><h3>Rehberden hatırlatmalar</h3><ul class="steps-list">
+          <li>Proje raporu en fazla <b>20 sayfa</b>; sığmayan ekler başvuru sistemindeki <b>EK BELGELER</b> kısmına yüklenir ve Ekler bölümünde listelenir.</li>
+          <li>Başvurular TÜBİTAK Yönetim Bilgi Sistemi üzerinden, Çağrı Duyurusu'ndaki tarihler arasında yapılır.</li>
+          <li>Değerlendirme ön değerlendirme, bölge ve final olmak üzere üç aşamalıdır; sunum en fazla 10 dakikadır ve yalnızca öğrenciler sunar.</li>
+          <li>Kaynaklar APA kurallarına göre yazılır.</li></ul></section>
+        <section class="wz-sec"><h3>Özgünlük ve benzerlik</h3><p class="wz-note">Rehbere göre başvuru sistemine yüklenen projelerin daha önce yayımlanmış metinlere benzerliği incelenir; kurala uymayan başvurular hangi aşamada olursa olsun elenir. Claude'un taslaklarını öğrencilerinizle birlikte okuyup kendi cümlelerinizle yeniden yazın ve yapay zekâ beyanını eksiksiz doldurun.</p></section>
+      </div>
+      <div class="row-actions"><button class="btn sm" type="button" data-act="project-copy">${ic('copy')}Metni kopyala</button></div>`
+  ]
+};
+
+/* ── Kontroller ── */
+function placeholderCount(p) { return Object.values(p.bolumler || {}).join('\n').match(/\[[^\]\n]{1,120}\]/g) || []; }
+function checksTeknofest(p) {
+  const C = [], add = (s, t, d) => C.push({ s, t, d: d || '' });
+  const uy = (p.uyeler || []).filter(u => filled(u.ad)), kap = uy.find(u => u.kaptan);
+  add(filled(p.baslik) ? 'ok' : 'no', 'Proje adı', filled(p.baslik) ? '' : 'Başlık alanına yazın.');
+  add(filled(p.kategori) && filled(p.seviye) ? 'ok' : 'no', 'Yarışma kategorisi ve takım eğitim seviyesi', '1. adım');
+  add(filled(p.takimAdi) ? 'ok' : 'no', 'Takım adı', '1. adım');
+  add(filled(p.takimId) && filled(p.basvuruId) ? 'ok' : 'warn', 'Takım ID ve Başvuru ID', filled(p.takimId) && filled(p.basvuruId) ? '' : "KYS'de başvuru tamamlanınca 1. adıma ekleyin; boşsa dosyada kırmızı yer tutucu görünür.");
+  add(kap ? 'ok' : 'no', 'Takım kaptanı', kap ? kap.ad : 'Üye tablosunda kaptanı işaretleyin.');
+  const sec = progOf(p).bolumler.filter(b => !b.tip), bos = sec.filter(b => !secFilled(p, b));
+  add(bos.length ? 'no' : 'ok', `Metin bölümleri: ${sec.length - bos.length}/${sec.length}`, bos.length ? 'Boş: ' + bos.map(b => b.ad).join(', ') : '');
+  const uzun = sec.filter(b => b.kelime && wordsOf((p.bolumler || {})[b.k]) > b.kelime * 1.8);
+  if (uzun.length) add('warn', 'Sayfa sınırını aşabilecek bölümler', uzun.map(b => `${b.ad} (${b.sinir.toLocaleLowerCase(TR)})`).join(', '));
+  const ip = (p.isPaketleri || []).filter(r => filled(r.ad) && filled(r.bas) && filled(r.bit));
+  add(ip.length >= 3 ? 'ok' : 'warn', `Proje takvimi: ${ip.length} iş paketi tarihli`, ip.length >= 3 ? '' : 'En az 3 iş paketini başlangıç ve bitiş tarihiyle yazın.');
+  add(secFilled(p, { tip: 'swot' }) ? 'ok' : 'no', 'SWOT analizi', secFilled(p, { tip: 'swot' }) ? '' : 'Dört kutunun hepsini doldurun.');
+  add(filled(p.slogan) ? 'ok' : 'warn', 'Teşekkürler sayfası sloganı', filled(p.slogan) ? '' : '2. adımda ekleyin.');
+  const ph = placeholderCount(p);
+  if (ph.length) add('warn', `${ph.length} yer tutucu dolduruluyor`, 'Metinde köşeli parantezli yerler var (ör. ' + ph[0] + '); Word dosyasında kırmızı görünür.');
+  return C;
+}
+function checksTubitak(p) {
+  const C = [], add = (s, t, d) => C.push({ s, t, d: d || '' });
+  add(filled(p.anaAlan) && filled(p.tematik) ? 'ok' : 'no', 'Proje ana alanı ve tematik alanı', '1. adım');
+  const tw = wordsOf(p.baslik);
+  add(tw && tw <= 15 ? 'ok' : 'no', `Proje adı: ${tw} kelime`, !tw ? 'Başlık alanına yazın.' : tw > 15 ? 'En fazla 15 kelime olmalı.' : '');
+  const oz = wordsOf((p.bolumler || {}).ozet);
+  add(oz >= 150 && oz <= 250 ? 'ok' : 'warn', `Özet: ${oz} kelime`, oz >= 150 && oz <= 250 ? '' : '150–250 kelime arasında olmalı.');
+  const ak = String((p.bolumler || {}).anahtar || '').split(/[,;\n]/).map(s => s.trim()).filter(Boolean).length;
+  add(ak && ak <= 5 ? 'ok' : 'warn', `Anahtar kelimeler: ${ak}`, ak > 5 ? 'En fazla 5 olmalı.' : !ak ? 'Özetin altına en fazla 5 anahtar kelime yazın.' : '');
+  const sec = progOf(p).bolumler.filter(b => !b.tip && b.k !== 'ekler'), bos = sec.filter(b => !secFilled(p, b));
+  add(bos.length ? 'no' : 'ok', `Rapor bölümleri: ${sec.length - bos.length}/${sec.length}`, bos.length ? 'Boş: ' + bos.map(b => b.ad).join(', ') : '');
+  add(secFilled(p, { tip: 'cizelge' }) ? 'ok' : 'no', 'İş-zaman çizelgesi', secFilled(p, { tip: 'cizelge' }) ? '' : 'Aylara göre işaretleyin.');
+  const yz = p.yz || {}, yzDolu = ['arac', 'amac', 'kapsam', 'mudahale'].every(k => filled(yz[k]));
+  add(!p.yzKullanildi || yzDolu ? 'ok' : 'no', 'Yapay zekâ kullanım beyanı', p.yzKullanildi && !yzDolu ? 'Claude ile yazılan bölümler var; dört başlığı da doldurun.' : p.yzKullanildi ? '' : 'Bu projede Claude kullanılmadı; raporda "kullanılmamıştır" yazar.');
+  const ph = placeholderCount(p);
+  if (ph.length) add('warn', `${ph.length} yer tutucu dolduruluyor`, 'Metinde köşeli parantezli yerler var (ör. ' + ph[0] + '); gerçek verilerle değiştirin.');
+  return C;
+}
+function checksHTML(C) {
+  const ok = C.filter(c => c.s === 'ok').length;
+  return `<p class="checks-sum"><b>${ok}/${C.length}</b> madde tamam</p><ul class="checks">${C.map(c => `<li><span class="ck ${c.s}" aria-label="${c.s === 'ok' ? 'Tamam' : c.s === 'warn' ? 'Uyarı' : 'Eksik'}">${c.s === 'ok' ? '✓' : c.s === 'warn' ? '!' : '×'}</span><span>${esc(c.t)}${c.d ? `<small>${esc(c.d)}</small>` : ''}</span></li>`).join('')}</ul>`;
+}
+const STEP_REQ = {
+  teknofest: [p => [p.kategori, p.seviye, p.takimAdi, (p.uyeler || []).some(u => u.kaptan && filled(u.ad)) ? 'x' : ''], p => [p.konu, p.fikir, getPath(p, 'notlar.problem'), getPath(p, 'notlar.cozum'), getPath(p, 'notlar.teknoloji'), getPath(p, 'notlar.hedef')]],
+  tubitak: [p => [p.alt, p.anaAlan, p.tematik, p.baslik], p => [p.fikir, p.soru, p.desen, p.orneklem, p.malzeme]]
+};
+function setWst(i, t, ok) { const s = $('#wst-' + i); if (s) s.textContent = t; const b = $(`.wiz [data-v="${i}"]`); if (b) b.classList.toggle('ok', !!ok); }
+function updateStepStatus(p) {
+  if (!p || !$('.wiz')) return;
+  const key = p.program === 'tubitak' ? 'tubitak' : 'teknofest';
+  [1, 2].forEach(i => { const arr = STEP_REQ[key][i - 1](p); const f = arr.filter(filled).length; setWst(i, `${f}/${arr.length} alan`, f === arr.length); });
+  const g = progressOf(p); setWst(3, `${g.filled}/${g.total} bölüm`, g.filled === g.total);
+  const c = (key === 'tubitak' ? checksTubitak : checksTeknofest)(p), ok = c.filter(x => x.s === 'ok').length;
+  setWst(4, `${ok}/${c.length} kontrol`, ok === c.length);
+  const cb = $('#checksBox'); if (cb) cb.innerHTML = checksHTML(c);
+  const tw = $('#titleWc');
+  if (tw) { const n = wordsOf(p.baslik); tw.textContent = key === 'tubitak' ? `${n}/15 kelime` : ''; tw.className = 'wc' + (key === 'tubitak' && n > 15 ? ' w' : ''); }
+  const yi = $('#yzInfo'); if (yi) { const ks = p.yzBolumler || []; yi.textContent = ks.length ? 'Claude ile yazılan: ' + ks.map(k => (progOf(p).bolumler.find(b => b.k === k || b.tip === k) || { ad: k }).ad).join(', ') + '.' : 'Henüz Claude ile yazılan bölüm yok.'; }
+}
+
+/* ── Editör ── */
+function stepOf(p) {
+  if (!STEPS[p.id]) STEPS[p.id] = Object.values(p.bolumler || {}).some(filled) ? 3 : 1;
+  return STEPS[p.id];
+}
+function renderEditor() {
+  flushAll(); abortAi();
+  const host = $('#editor'), p = currentProject();
+  $('#atolye').classList.toggle('has-open', !!S.openProject);
+  if (!p) {
+    if (S.openProject && S.creating === S.openProject) { host.innerHTML = '<div class="card empty"><p>Proje hazırlanıyor…</p></div>'; return; }
+    S.openProject = null;
+    $('#atolye').classList.remove('has-open');
+    host.innerHTML = homeHTML();
+    return;
+  }
+  const pr = progOf(p), st = PDURUM_AD[p.durum] ? p.durum : 'fikir', step = stepOf(p);
+  host.innerHTML = `<article class="card ed ${pr.cls}" data-pid="${esc(p.id)}">
+    <div class="ed-top">
+      <div class="ed-row">
+        <div class="ed-row-l"><button class="btn ghost sm ed-back" type="button" data-act="project-close">${ic('back')}Projeler</button><span class="pchip"><span class="pbadge sm">${pr.kisa}</span>${pr.ad}</span>${p.ornek ? '<em class="tag">örnek</em>' : ''}</div>
+        <div class="ed-row-l"><span class="savestate" id="edSave">${S.mode === 'local' ? 'Yalnızca bu oturumda tutuluyor' : 'Kaydedildi'}</span><button class="icon-btn" type="button" data-act="project-del" aria-label="Projeyi sil">${ic('trash')}</button></div>
+      </div>
+      <div><label class="sr" for="ed-baslik">Proje adı</label><textarea id="ed-baslik" class="ed-title" rows="1" data-f="baslik" placeholder="Proje adını yazın">${esc(p.baslik || '')}</textarea><span class="wc" id="titleWc"></span></div>
+      <div class="ed-meta">
+        <div class="field wide"><span id="ed-durum-l">Durum</span><div class="steps" id="ed-durum" role="group" aria-labelledby="ed-durum-l">${PDURUM.map(([k, l]) => `<button type="button" data-act="p-durum" data-v="${k}" aria-pressed="${k === st}">${l}</button>`).join('')}</div></div>
+        <label class="field"><span>Son başvuru tarihi</span><input class="inp" type="date" id="ed-son" data-f="sonTarih" value="${esc(p.sonTarih || '')}"></label>
+        <div class="field"><span>Kalan süre</span><span class="due-big" id="edDue"></span></div>
+      </div>
+    </div>
+    <nav class="wiz" aria-label="Hazırlık adımları">${pr.adimlar.map((a, i) => `<button type="button" data-act="step" data-v="${i + 1}"${i + 1 === step ? ' aria-current="step"' : ''}><span class="wn">${i + 1}</span><span class="wl"><b>${a}</b><small id="wst-${i + 1}"></small></span></button>`).join('')}</nav>
+    <div class="wz" id="wizBody"></div>
+    <div class="wz-foot" id="wizFoot"></div>
+  </article>`;
+  autosize($('#ed-baslik'));
+  renderStep();
+  if (S.focusTitle) { S.focusTitle = false; setTimeout(() => { const t = $('#ed-baslik'); if (t) t.focus(); }, 30); }
+}
+function renderStep() {
+  const p = currentProject(); if (!p || !$('#wizBody')) return;
+  const pr = progOf(p), step = stepOf(p);
+  $$('.wiz button').forEach(b => { if (Number(b.dataset.v) === step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+  $('#wizBody').innerHTML = STEP_HTML[p.program === 'tubitak' ? 'tubitak' : 'teknofest'][step - 1](p);
+  $('#wizFoot').innerHTML = (step > 1 ? `<button class="btn" type="button" data-act="step" data-v="${step - 1}">${ic('back')}${pr.adimlar[step - 2]}</button>` : '<span></span>')
+    + (step < 4 ? `<button class="btn primary" type="button" data-act="step" data-v="${step + 1}">Sonraki: ${pr.adimlar[step]} →</button>` : '');
+  $$('#wizBody textarea').forEach(autosize);
+  ARRS.forEach(n => renderArr(n, p));
+  renderEdMeta(p);
+}
+function goStep(n) {
+  const p = currentProject(); if (!p || n < 1 || n > 4) return;
+  flushAll(); abortAi();
+  STEPS[p.id] = n;
+  renderStep();
+  const nav = $('.wiz'); if (nav && nav.getBoundingClientRect().top < 0) nav.scrollIntoView({ block: 'start' });
+}
+function renderDue(p) {
+  const due = dueInfo(p.sonTarih), d = $('#edDue');
+  if (d) { d.textContent = due ? due.t : 'Tarih seçilmedi'; d.className = 'due-big ' + (due ? due.c : 'muted'); }
+}
+function renderEdMeta(p) {
+  renderDue(p);
+  $$('#ed-durum button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === (PDURUM_AD[p.durum] ? p.durum : 'fikir'))));
+  renderTeam(p);
+  updateStepStatus(liveProject() || p);
+}
+// TÜBİTAK ekip çipleri; TEKNOFEST'te üye tablosundaki öğrenci listesi
+function renderTeam(p) {
+  const ed = $('.ed'); if (!ed || ed.dataset.pid !== p.id) return;
+  const um = $('#tbl-uyeler');
+  if (um && !um.contains(document.activeElement) && !dirty.has(p.id + '|uyeler') && um.dataset.sig !== uyeImza(p.uyeler || [])) renderArr('uyeler', p);
+  const box = $('#edTeam'); if (!box) return;
+  if ($('#ed-addTeam') && document.activeElement === $('#ed-addTeam')) return;
+  const ids = p.ekip || [], members = teamOf(p);
+  const avail = sortStudents(S.ogrenciler.filter(s => !ids.includes(s.id)));
+  box.innerHTML = members.map(s => `<span class="tchip"><span class="avatar xs">${esc(initials(s.ad))}</span>${esc(s.ad)}<button type="button" data-act="team-del" data-id="${esc(s.id)}" aria-label="${esc(s.ad)} ekipten çıkar">${ic('close', 'sm')}</button></span>`).join('')
+    + (!S.ogrenciler.length ? '<span class="muted" style="font-size:13.5px">Önce Panel\'den öğrenci ekleyin.</span>'
+      : avail.length ? `<label class="sr" for="ed-addTeam">Ekibe öğrenci ekle</label><select id="ed-addTeam" class="team-add"><option value="">+ Öğrenci ekle</option>${studentOptions(avail)}</select>` : '');
+}
+function studentOptions(list) {
+  const groups = {}; list.forEach(s => { const g = s.sinif || 'Sınıfsız'; (groups[g] = groups[g] || []).push(s); });
+  return Object.entries(groups).map(([g, ls]) => `<optgroup label="${esc(g)}">${ls.map(s => `<option value="${esc(s.id)}">${esc(s.ad)}${s.no ? ' · ' + esc(s.no) : ''}</option>`).join('')}</optgroup>`).join('');
+}
+
+/* Tablo düzenleyicileri: üyeler, iş paketleri, iş-zaman çizelgesi */
+// Üye tablosu yalnızca üyeler ya da öğrenci listesi değişince yeniden çizilir
+const uyeImza = rows => JSON.stringify(rows) + '|' + S.ogrenciler.map(s => s.id + ':' + s.ad + ':' + (s.sinif || '')).join(',');
+function renderArr(n, p) {
+  const box = $('#tbl-' + n); if (!box) return;
+  const rows = p[n] || [];
+  box.dataset.json = JSON.stringify(rows);
+  const del = i => `<td class="c-x"><button class="icon-btn" type="button" data-act="row-del" data-arr="${n}" data-i="${i}" aria-label="Satırı sil">${ic('trash')}</button></td>`;
+  const inp = (k, v, ph, label, type) => `<input class="inp" data-k="${k}"${type ? ` type="${type}"` : ''} value="${esc(v || '')}" placeholder="${esc(ph || '')}" aria-label="${esc(label)}" autocomplete="off">`;
+  if (n === 'uyeler') {
+    box.dataset.sig = uyeImza(rows);
+    const avail = sortStudents(S.ogrenciler.filter(s => !rows.some(r => r.ogrId === s.id)));
+    box.innerHTML = `<div class="tbl-wrap"><table class="etbl"><thead><tr><th class="c-cap">Kaptan</th><th>Ad Soyad</th><th>Takımdaki görevi</th><th>Eğitim bilgisi</th><th class="c-x"><span class="sr">Sil</span></th></tr></thead><tbody>
+      ${rows.length ? rows.map((r, i) => `<tr data-row="uyeler" data-ogr="${esc(r.ogrId || '')}"><td class="c-cap"><input type="radio" name="kaptan" data-k="kaptan" aria-label="${esc(r.ad || 'Üye')} kaptan"${r.kaptan ? ' checked' : ''}></td><td>${inp('ad', r.ad, 'Ad Soyad', 'Ad Soyad')}</td><td>${inp('gorev', r.gorev, 'ör. Yazılım', 'Takımdaki görevi')}</td><td>${inp('egitim', r.egitim, 'ör. 7. sınıf', 'Eğitim bilgisi')}</td>${del(i)}</tr>`).join('')
+        : '<tr><td colspan="5" class="muted" style="padding:14px">Henüz üye yok. Öğrencilerinizden seçin ya da boş satır ekleyin.</td></tr>'}
+      </tbody></table></div>
+      <div class="row-actions">${avail.length ? `<label class="sr" for="uyeAdd">Öğrencilerimden ekle</label><select id="uyeAdd" class="team-add"><option value="">+ Öğrencilerimden ekle</option>${studentOptions(avail)}</select>` : ''}<button class="btn sm" type="button" data-act="row-add" data-arr="uyeler">${ic('plus')}Boş satır</button><span class="muted" style="font-size:12.5px">${rows.length} kişi + danışman</span></div>`;
+  } else if (n === 'isPaketleri') {
+    box.innerHTML = `<div class="tbl-wrap"><table class="etbl"><thead><tr><th class="c-no">No</th><th>İş paketi adı</th><th>Alt faaliyetler <span class="muted">(her satıra bir)</span></th><th style="width:150px">Başlangıç</th><th style="width:150px">Bitiş</th><th class="c-x"><span class="sr">Sil</span></th></tr></thead><tbody>
+      ${rows.map((r, i) => `<tr data-row="isPaketleri"><td class="c-no">${i + 1}</td><td>${inp('ad', r.ad, 'İş paketi', 'İş paketi adı')}</td><td><textarea class="inp" data-k="alt" rows="2" aria-label="Alt faaliyetler">${esc(r.alt || '')}</textarea></td><td>${inp('bas', r.bas, '', 'Başlangıç', 'month')}</td><td>${inp('bit', r.bit, '', 'Bitiş', 'month')}</td>${del(i)}</tr>`).join('')}
+      </tbody></table></div><div class="row-actions"><button class="btn sm" type="button" data-act="row-add" data-arr="isPaketleri">${ic('plus')}İş paketi ekle</button></div>`;
+    $$('textarea', box).forEach(autosize);
+  } else if (n === 'cizelge') {
+    const ms = tMonths(p), short = ms.length > 7;
+    box.innerHTML = `<div class="tbl-wrap"><table class="etbl grid-m" style="min-width:${240 + ms.length * 52}px"><thead><tr><th>İşin adı</th>${ms.map(m => { const [y, mo] = m.split('-').map(Number); const ad = AYLAR[mo - 1]; return `<th class="m">${short ? ad.slice(0, 3) : ad}<br><span class="muted">${y}</span></th>`; }).join('')}<th class="c-x"><span class="sr">Sil</span></th></tr></thead><tbody>
+      ${rows.map((r, i) => `<tr data-row="cizelge"><td>${inp('ad', r.ad, 'İşin adı', 'İşin adı')}</td>${ms.map((m, j) => `<td class="m"><label><input type="checkbox" data-m="${j}"${(r.aylar || []).includes(j) ? ' checked' : ''} aria-label="${esc(r.ad || 'İş')} · ${monthLabel(m)}"></label></td>`).join('')}${del(i)}</tr>`).join('')}
+      </tbody></table></div><div class="row-actions"><button class="btn sm" type="button" data-act="row-add" data-arr="cizelge">${ic('plus')}Satır ekle</button><span class="muted" style="font-size:12.5px">${monthLabel(ms[0])} – ${monthLabel(ms[ms.length - 1])} · aralığı 2. adımdan değiştirin</span></div>`;
+  }
+}
+function collectArr(n) {
+  const ed = $('.ed'); if (!ed) return [];
+  return $$(`[data-row="${n}"]`, ed).map(tr => {
+    const o = {};
+    $$('[data-k]', tr).forEach(el => { o[el.dataset.k] = el.type === 'radio' || el.type === 'checkbox' ? el.checked : el.value; });
+    if (n === 'uyeler') o.ogrId = tr.dataset.ogr || '';
+    if (n === 'cizelge') o.aylar = $$('[data-m]', tr).filter(c => c.checked).map(c => Number(c.dataset.m));
+    return o;
+  });
+}
+function arrData(n, arr) {
+  const d = { [n]: arr, guncelleme: Date.now() };
+  if (n === 'uyeler') d.ekip = arr.filter(u => u.ogrId).map(u => u.ogrId);
+  return d;
+}
+function saveArrNow(n, arr) {
+  const p = currentProject(); if (!p) return;
+  const key = p.id + '|' + n;
+  pending.delete(key); clearTimeout(timers.get(key)); dirty.delete(key);
+  const box = $('#tbl-' + n); if (box) box.dataset.json = JSON.stringify(arr);
+  write('projeler', p.id, 'update', arrData(n, arr));
+  updateStepStatus(liveProject());
+}
+function rowAdd(n) {
+  const p = currentProject(); if (!p) return;
+  const arr = collectArr(n);
+  arr.push(n === 'uyeler' ? { ad: '', gorev: '', egitim: '', ogrId: '', kaptan: !arr.some(u => u.kaptan) } : n === 'cizelge' ? { ad: '', aylar: [] } : { ad: '', alt: '', bas: '', bit: '' });
+  saveArrNow(n, arr);
+  renderArr(n, Object.assign({}, liveProject(), { [n]: arr }));
+  const rows = $$(`[data-row="${n}"]`); const last = rows[rows.length - 1]; const f = last && $('[data-k="ad"]', last); if (f) f.focus();
+}
+function rowDel(n, i) {
+  const arr = collectArr(n); arr.splice(i, 1);
+  if (n === 'uyeler' && arr.length && !arr.some(u => u.kaptan)) arr[0].kaptan = true;
+  saveArrNow(n, arr);
+  renderArr(n, Object.assign({}, liveProject(), { [n]: arr }));
+}
+function addUyeFromStudent(id) {
+  const s = S.ogrenciler.find(x => x.id === id); if (!s) return;
+  const arr = collectArr('uyeler');
+  const sinif = parseInt(s.sinif, 10);
+  arr.push({ ad: s.ad, gorev: '', egitim: sinif ? `${sinif}. sınıf` : '', ogrId: s.id, kaptan: !arr.some(u => u.kaptan) });
+  saveArrNow('uyeler', arr);
+  renderArr('uyeler', Object.assign({}, liveProject(), { uyeler: arr }));
+}
+
+function syncEditor() {
+  if (!S.openProject || S.view !== 'atolye') return;
+  const p = currentProject(), ed = $('.ed');
+  if (!p) { if (S.loaded.projeler && S.creating !== S.openProject) { S.openProject = null; renderEditor(); renderProjectList(); } return; }
+  if (S.creating === p.id) S.creating = null;
+  if (!ed || ed.dataset.pid !== p.id) { renderEditor(); return; }
+  const act = document.activeElement;
+  $$('[data-f]', ed).forEach(el => {
+    const key = el.dataset.f;
+    if (el === act || dirty.has(p.id + '|' + key)) return;
+    const v = getPath(p, key), sv = v == null ? '' : String(v);
+    if (el.value === sv || (el.tagName === 'SELECT' && !sv)) return;
+    el.value = sv;
+    if (el.tagName === 'TEXTAREA') autosize(el);
+    if (el.dataset.k) updateSecMeta(el.dataset.k, el.value);
+  });
+  ARRS.forEach(n => {
+    const box = $('#tbl-' + n);
+    if (!box || box.contains(act) || dirty.has(p.id + '|' + n)) return;
+    if (box.dataset.json !== JSON.stringify(p[n] || [])) renderArr(n, p);
+  });
+  renderEdMeta(p);
+}
+function updateSecMeta(k, v) {
+  const p = currentProject(); if (!p) return;
+  const b = progOf(p).bolumler.find(x => x.k === k); if (!b) return;
+  const info = wcInfo(b, v), wc = $('#wc-' + k), li = $('#s-' + k);
+  if (wc) { wc.textContent = info.t; wc.className = 'wc ' + info.cls; }
+  if (li) li.classList.toggle('filled', filled(v));
+  const lbl = li && $('[data-act="ai"] span', li); if (lbl) lbl.textContent = filled(v) ? 'Claude ile geliştir' : 'Claude ile taslak yaz';
+}
+
+// Yazarken kaydetme: alan başına bekletilmiş tek yazma
+const pending = new Map(), timers = new Map(), dirty = new Set();
+function queueField(pid, path, value) {
+  const key = pid + '|' + path.join('.');
+  pending.set(key, { pid, path, value }); dirty.add(key);
+  clearTimeout(timers.get(key));
+  timers.set(key, setTimeout(() => flushKey(key), 900));
+  setSaveState('saving');
+}
+function flushKey(key) {
+  const it = pending.get(key); if (!it) return;
+  pending.delete(key); clearTimeout(timers.get(key)); timers.delete(key);
+  const data = ARRS.includes(it.path[0]) && it.path.length === 1 ? arrData(it.path[0], it.value) : Object.assign(nest(it.path, it.value), { guncelleme: Date.now() });
+  write('projeler', it.pid, 'update', data).then(() => {
+    if (!pending.has(key)) dirty.delete(key);
+    if (!pending.size) setSaveState('saved');
+  }, () => { dirty.delete(key); setSaveState('error'); });
+}
+function flushAll() { Array.from(pending.keys()).forEach(flushKey); }
+function setSaveState(s) {
+  const el = $('#edSave'); if (!el) return;
+  el.classList.toggle('err', s === 'error');
+  el.textContent = S.mode === 'local' ? 'Yalnızca bu oturumda tutuluyor' : { saving: 'Kaydediliyor…', saved: 'Kaydedildi', error: 'Kaydedilemedi' }[s];
+}
+function saveNow(fields) {
+  const p = currentProject(); if (!p) return;
+  write('projeler', p.id, 'update', Object.assign({}, fields, { guncelleme: Date.now() }));
+}
+function liveProject() {
+  const p = currentProject(); if (!p) return null;
+  const o = JSON.parse(JSON.stringify(p)), ed = $('.ed');
+  if (ed && ed.dataset.pid === p.id) {
+    $$('[data-f]', ed).forEach(el => setPath(o, el.dataset.f, el.type === 'number' ? Number(el.value) || 0 : el.value));
+    ARRS.forEach(n => { if ($('#tbl-' + n)) o[n] = collectArr(n); });
+  }
+  return o;
+}
+function openProject(id) {
+  flushAll(); S.openProject = id;
+  if (S.view !== 'atolye') setView('atolye'); else renderEditor();
+  renderProjectList();
+  if (window.innerWidth < 900) window.scrollTo(0, 0);
+}
+function createProject(program, extra) {
+  const pr = PROGRAMS[program]; if (!pr) return;
+  const id = newId('projeler'), now = Date.now();
+  const base = { program, baslik: '', durum: 'fikir', sonTarih: '', ekip: [], fikir: '', bolumler: {}, notlar: {}, danisman: 'Burak TURGUT', olusturma: now, guncelleme: now };
+  const ozel = program === 'tubitak'
+    ? { alt: pr.alt[0], anaAlan: '', tematik: '', soru: '', hipotez: '', desen: '', orneklem: '', malzeme: '', tBas: thisMonth(), tSure: 6, cizelge: ['Literatür Taraması', 'Arazi Çalışması', 'Verilerin Toplanması ve Analizi', 'Proje Raporu Yazımı'].map(ad => ({ ad, aylar: [] })), yz: { arac: '', amac: '', kapsam: '', mudahale: '' }, yzKullanildi: false, yzBolumler: [] }
+    : { kategori: '', seviye: '', okul: '', takimAdi: '', takimId: '', basvuruId: '', danismanBilgi: '', uyeler: [], konu: '', cozumTuru: '', prototipDurum: '', bas: thisMonth(), bit: addMonth(thisMonth(), 6), slogan: '', isPaketleri: ['Literatür taraması ve ihtiyaç analizi', 'Tasarım', 'Prototip geliştirme', 'Test ve iyileştirme', 'Raporlama ve sunum hazırlığı'].map(ad => ({ ad, alt: '', bas: '', bit: '' })), swot: { s: '', w: '', o: '', t: '' }, yzBolumler: [] };
+  const data = Object.assign(base, ozel, extra || {});
+  S.creating = id; S.openProject = id; S.focusTitle = !data.baslik; STEPS[id] = 1;
+  if (S.pf && S.pf !== program) S.pf = '';
+  write('projeler', id, 'set', data).catch(() => { if (S.openProject === id) { S.openProject = null; S.creating = null; renderEditor(); } });
+  if (S.view !== 'atolye') setView('atolye'); else renderEditor();
+  renderProjectList();
+}
+function setTeam(ids) { saveNow({ ekip: ids }); }
+function projectText(p) {
+  const pr = progOf(p), L = [p.baslik || 'Adsız proje'];
+  L.push(p.program === 'tubitak' ? [p.alt, p.anaAlan, p.tematik].filter(Boolean).join(' · ') : [pr.ad, p.kategori, p.seviye, p.takimAdi && 'Takım: ' + p.takimAdi].filter(Boolean).join(' · '), '');
+  pr.bolumler.forEach((b, i) => {
+    L.push(`${i + 1}. ${upper(b.ad)}`);
+    if (b.tip === 'isPaketleri') (p.isPaketleri || []).filter(r => filled(r.ad)).forEach((r, j) => L.push(`${j + 1}. ${r.ad}${filled(r.alt) ? ' — ' + r.alt.trim().replace(/\n+/g, '; ') : ''}${r.bas || r.bit ? ` (${monthLabel(r.bas)} – ${monthLabel(r.bit)})` : ''}`));
+    else if (b.tip === 'swot') [['s', 'Güçlü yönler'], ['w', 'Zayıf yönler'], ['o', 'Fırsatlar'], ['t', 'Tehditler']].forEach(([k, l]) => L.push(l + ':', String(getPath(p, 'swot.' + k) || '—').trim()));
+    else if (b.tip === 'cizelge') { const ms = tMonths(p); (p.cizelge || []).filter(r => filled(r.ad)).forEach(r => L.push(`${r.ad}: ${(r.aylar || []).map(j => monthLabel(ms[j])).join(', ') || '—'}`)); }
+    else L.push(String((p.bolumler || {})[b.k] || '').trim() || '—');
+    L.push('');
+  });
+  return L.join('\n');
+}
+function copyProject() {
+  const p = liveProject(); if (!p) return;
+  const text = projectText(p);
+  let pr;
+  try { pr = navigator.clipboard.writeText(text); } catch (e) { pr = Promise.reject(e); }
+  pr.then(() => toast('Proje metni panoya kopyalandı'), () => {
+    modal(`<div class="m-head"><h2 id="modalTitle">Metni kopyalayın</h2><button class="icon-btn" type="button" data-act="close" aria-label="Kapat">${ic('close')}</button></div><p class="sub">Metin seçili; Ctrl+C ile kopyalayabilirsiniz.</p><label class="sr" for="copyBox">Proje metni</label><textarea class="inp" id="copyBox" rows="12" readonly>${esc(text)}</textarea>`, '#copyBox');
+    setTimeout(() => { const t = $('#copyBox'); if (t) t.select(); }, 60);
+  });
+}
+async function downloadDocx() {
+  const p = liveProject(); if (!p) return;
+  flushAll();
+  const err = $('#dlErr'), btn = $('[data-act="docx"]');
+  const fail = m => { if (err) { err.textContent = m; err.hidden = false; } };
+  if (err) err.hidden = true;
+  if (!(await ensureJSZip())) { fail('Word oluşturucu yüklenemedi. İnternet bağlantınızı kontrol edip sayfayı yenileyin.'); return; }
+  if (!downloads) { fail('Bu görünümde dosya indirilemiyor. Sayfayı claude.ai üzerinden ya da kendi sunucunuzdan açın.'); return; }
+  const label = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Hazırlanıyor…'; }
+  try {
+    const files = DOCX.build(p, progOf(p));
+    const zip = new JSZip();
+    Object.keys(files).forEach(k => zip.file(k, files[k], { createFolders: false }));
+    const blob = await zip.generateAsync({ type: 'blob', mimeType: DOCX_MIME, compression: 'DEFLATE' });
+    const res = await downloads.save({ filename: docName(p), data: blob });
+    if (!res || res.status !== 'delivered') toast('Word dosyası kaydedildi');
+  } catch (e) {
+    const c = e && e.code;
+    if (c === 'declined') return;
+    console.error(e);
+    fail(c === 'extension_not_enabled' ? 'Bu görünümde Word dosyası indirme kapalı.' : c === 'rate_limited' ? 'Biraz bekleyip tekrar deneyin.' : 'Word dosyası oluşturulamadı. Tekrar deneyin.');
+  } finally { if (btn && btn.isConnected) { btn.disabled = false; btn.innerHTML = label; } }
+}
+
+/* ── Claude ile yazma ── */
+const aiCtl = {}, aiText = {};
+let fillCtl = null;
+const HIDE_AI = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
+function abortAi() {
+  Object.keys(aiCtl).forEach(k => { aiCtl[k].abort(); delete aiCtl[k]; });
+  if (fillCtl) { fillCtl.abort(); fillCtl = null; }
+}
+function aiMsg(c) {
+  return ({
+    not_granted: 'Claude kullanımına izin verilmedi.', sampling_disabled: 'Claude bu hesapta kullanılamıyor.',
+    rate_limited: 'Çok sık istek gönderildi. Biraz bekleyip tekrar deneyin.', session_expired: 'Oturumun süresi doldu; yeniden giriş yapın.',
+    refused: 'Bu istek yanıtlanamadı. Proje bilgilerini değiştirip tekrar deneyin.', prompt_too_large: 'Metin çok uzun; bölümleri kısaltıp tekrar deneyin.',
+    invalid_json: 'Yanıt okunamadı. Tekrar deneyin.', empty_completion: 'Yanıt boş geldi. Proje bilgilerini biraz daha ayrıntılandırıp deneyin.'
+  })[c] || 'Yanıt alınamadı. Tekrar deneyin.';
+}
+function aiFail(e) {
+  const c = e && e.code;
+  if (HIDE_AI.includes(c)) { document.body.classList.remove('has-ai'); sample = null; }
+  return aiMsg(c);
+}
+function markAi(k) {
+  const p = currentProject(); if (!p) return;
+  const set = new Set(p.yzBolumler || []);
+  if (set.has(k) && p.yzKullanildi) return;
+  set.add(k);
+  saveNow({ yzBolumler: Array.from(set), yzKullanildi: true });
+}
+function contextLines(p) {
+  const n = v => filled(v) ? String(v).trim() : '-';
+  if (p.program === 'tubitak') return [
+    `Program: TÜBİTAK ${n(p.alt)}`, `Proje ana alanı: ${n(p.anaAlan)}`, `Tematik alan: ${n(p.tematik)}`, `Proje adı: ${n(p.baslik)}`,
+    `Öğrenci düzeyi: ${/2204-A/.test(p.alt || '') ? 'lise' : 'ortaokul'}`, `Proje fikri: ${n(p.fikir)}`, `Araştırma sorusu: ${n(p.soru)}`, `Hipotez: ${n(p.hipotez)}`,
+    `Araştırma deseni: ${n(p.desen)}`, `Çalışma grubu / örneklem / saha: ${n(p.orneklem)}`, `Veri toplama araçları ve malzemeler: ${n(p.malzeme)}`, `Şu ana kadar yapılanlar: ${n(getPath(p, 'notlar.durum'))}`
+  ].join('\n');
+  return [
+    `Yarışma: TEKNOFEST 2026 ${n(p.kategori)} Yarışması`, `Takım eğitim seviyesi: ${n(p.seviye)}`, `Proje adı: ${n(p.baslik)}`, `Proje konusu: ${n(p.konu)}`, `Proje fikri: ${n(p.fikir)}`,
+    `Problem notları: ${n(getPath(p, 'notlar.problem'))}`, `Çözüm notları: ${n(getPath(p, 'notlar.cozum'))}`, `Teknoloji ve malzemeler: ${n(getPath(p, 'notlar.teknoloji'))}`,
+    `Hedef kitle notları: ${n(getPath(p, 'notlar.hedef'))}`, `Benzer çözümlerden farkı / yerlilik: ${n(getPath(p, 'notlar.fark'))}`, `Şu ana kadar yapılanlar: ${n(getPath(p, 'notlar.durum'))}`,
+    `Çözüm türü: ${n(p.cozumTuru)}`, `Prototip durumu: ${n(p.prototipDurum)}`, `Takım: ${(p.uyeler || []).filter(u => filled(u.ad)).length} öğrenci ve danışman öğretmen`,
+    `Proje dönemi: ${monthLabel(p.bas) || '-'} – ${monthLabel(p.bit) || '-'}`
+  ].join('\n');
+}
+const roleLine = p => p.program === 'tubitak'
+  ? 'Bir danışman öğretmenin, öğrencileriyle yürüttüğü TÜBİTAK 2204 araştırma projesinin raporunu TÜBİTAK proje yazma şablonuna ve proje rehberine uygun yazmasına yardım eden deneyimli bir proje danışmanısın.'
+  : 'Bir danışman öğretmenin, öğrenci takımının TEKNOFEST proje sunum dosyasını yarışmanın sunum şablonuna uygun yazmasına yardım eden deneyimli bir proje danışmanısın.';
+const RULES = 'KURALLAR: Türkçe, resmi ve akıcı yaz. Uydurma istatistik, kaynak, kurum, kişi adı veya atıf ekleme; gerçek veri gereken yerde [veri eklenecek] gibi köşeli parantezli bir yer tutucu bırak. Öğrencilerin seviyesine uygun, onların okul imkânlarıyla yapabileceği gerçekçi bir çalışmayı anlat.';
+function buildSectionPrompt(p, k) {
+  const pr = progOf(p), b = pr.bolumler.find(x => x.k === k);
+  const cur = String((p.bolumler || {})[k] || '').trim();
+  const others = pr.bolumler.filter(x => !x.tip && x.k !== k && filled((p.bolumler || {})[x.k]))
+    .map(x => `## ${x.ad}\n${String(p.bolumler[x.k]).trim().slice(0, 1200)}`).join('\n\n');
+  const L = [roleLine(p), '', 'PROJE BİLGİLERİ', contextLines(p)];
+  if (others) L.push('', 'DİĞER BÖLÜMLERDE YAZILANLAR', others);
+  L.push('', `GÖREV: "${b.ad}" bölümünü ${cur ? 'aşağıdaki mevcut metnin fikirlerini koruyarak geliştir, dilini düzelt ve eksiklerini tamamla' : 'yaz'}.`, `Şablonun bu bölüm için istediği: ${b.ipucu}`);
+  if (b.sinir) L.push(`Sayfa sınırı: ${b.sinir}.`);
+  if (b.kelime && !b.sayac) L.push(`Uzunluk: yaklaşık ${b.kelime} kelime.`);
+  if (b.kural) L.push(b.kural);
+  L.push(RULES, 'Yalnızca bölüm metnini yaz: başlık, giriş cümlesi veya açıklama ekleme, Markdown biçimi (#, **) kullanma; madde gerekiyorsa satırları "- " ile başlat.');
+  if (cur) L.push('', 'MEVCUT METİN', '"""', cur.slice(0, 8000), '"""');
+  return L.join('\n');
+}
+function tablePrompt(p, tip) {
+  const L = [roleLine(p), '', 'PROJE BİLGİLERİ', contextLines(p)];
+  const yaz = progOf(p).bolumler.filter(x => !x.tip && filled((p.bolumler || {})[x.k])).slice(0, 4).map(x => `## ${x.ad}\n${String(p.bolumler[x.k]).trim().slice(0, 700)}`).join('\n\n');
+  if (yaz) L.push('', 'RAPORDAN BÖLÜMLER', yaz);
+  if (tip === 'isPaketleri') {
+    const bas = /^\d{4}-\d{2}$/.test(p.bas || '') ? p.bas : thisMonth(), bit = /^\d{4}-\d{2}$/.test(p.bit || '') ? p.bit : addMonth(bas, 6);
+    L.push('', `GÖREV: Şablondaki "Proje Takvimi" tablosu için ${monthLabel(bas)} ile ${monthLabel(bit)} arasına yayılan 5–7 iş paketi hazırla. İş paketi, tamamlandığında net bir sonuç veren görevler grubudur; her birine 2–4 kısa alt faaliyet yaz. Tarihler gerçekçi ve sıralı olsun, ${bas} ile ${bit} aralığının dışına çıkmasın.`,
+      'Yalnızca JSON dizisi döndür: [{"ad": "iş paketi adı", "alt": ["alt faaliyet", "alt faaliyet"], "bas": "YYYY-MM", "bit": "YYYY-MM"}]');
+  } else if (tip === 'swot') {
+    L.push('', 'GÖREV: Proje için SWOT analizi hazırla. Her kutuya projeye özgü 3–5 kısa madde yaz; zayıf yönleri ve tehditleri dürüstçe belirt. Uydurma rakam kullanma.',
+      'Yalnızca JSON nesnesi döndür: {"s": ["güçlü yön"], "w": ["zayıf yön"], "o": ["fırsat"], "t": ["tehdit"]}');
+  } else {
+    const ms = tMonths(p);
+    L.push('', `GÖREV: Proje iş-zaman çizelgesi için 4–7 iş satırı hazırla. Şablondaki örnek satırlar: Literatür Taraması, Arazi Çalışması, Verilerin Toplanması ve Analizi, Proje Raporu Yazımı. Satırları projeye uyarla; her satır için yapılacağı ayların sıra numaralarını ver. Aylar: ${ms.map((m, i) => `${i}: ${monthLabel(m)}`).join(', ')}.`,
+      'Yalnızca JSON dizisi döndür: [{"ad": "Literatür Taraması", "aylar": [0, 1]}]');
+  }
+  return L.join('\n');
+}
+const cleanAi = t => String(t || '').replace(/^\s*#{1,6}\s.*\n+/, '').replace(/\*\*(.+?)\*\*/g, '$1').trim();
+const isYM = v => /^\d{4}-\d{2}$/.test(String(v || ''));
+async function runTableAi(tip, signal) {
+  const p = liveProject(); if (!p || !sample) return;
+  const res = await sample.json(tablePrompt(p, tip), { signal, cache: false });
+  if (S.openProject !== p.id) return;
+  if (tip === 'swot') {
+    const sw = {};
+    ['s', 'w', 'o', 't'].forEach(k => { const a = Array.isArray(res && res[k]) ? res[k] : []; sw[k] = a.filter(v => typeof v === 'string' && v.trim()).map(v => '- ' + v.trim().replace(/^[-•]\s*/, '')).join('\n'); });
+    if (!Object.values(sw).some(Boolean)) throw { code: 'invalid_json' };
+    ['s', 'w', 'o', 't'].forEach(k => { const el = $(`[data-f="swot.${k}"]`); if (el) { el.value = sw[k]; autosize(el); } });
+    saveNow({ swot: sw });
+  } else if (tip === 'isPaketleri') {
+    const rows = (Array.isArray(res) ? res : []).filter(r => r && typeof r.ad === 'string' && r.ad.trim()).slice(0, 10)
+      .map(r => ({ ad: r.ad.trim(), alt: (Array.isArray(r.alt) ? r.alt : String(r.alt || '').split(/\n|;/)).map(s => String(s).trim()).filter(Boolean).join('\n'), bas: isYM(r.bas) ? r.bas : '', bit: isYM(r.bit) ? r.bit : '' }));
+    if (!rows.length) throw { code: 'invalid_json' };
+    saveArrNow('isPaketleri', rows);
+    renderArr('isPaketleri', Object.assign({}, p, { isPaketleri: rows }));
+  } else {
+    const n = tMonths(p).length;
+    const rows = (Array.isArray(res) ? res : []).filter(r => r && typeof r.ad === 'string' && r.ad.trim()).slice(0, 10)
+      .map(r => ({ ad: r.ad.trim(), aylar: Array.from(new Set((Array.isArray(r.aylar) ? r.aylar : []).map(Number).filter(i => Number.isInteger(i) && i >= 0 && i < n))).sort((a, b) => a - b) }));
+    if (!rows.length) throw { code: 'invalid_json' };
+    saveArrNow('cizelge', rows);
+    renderArr('cizelge', Object.assign({}, p, { cizelge: rows }));
+  }
+  markAi(tip);
+  const li = $('#s-' + (tip === 'isPaketleri' ? 'takvim' : tip)); if (li) li.classList.add('filled');
+}
+async function runTableBtn(btn, tip) {
+  if (!sample) return;
+  if (aiCtl[tip]) { aiCtl[tip].abort(); return; }
+  const ctl = new AbortController(); aiCtl[tip] = ctl;
+  const label = btn.innerHTML;
+  btn.innerHTML = 'Hazırlanıyor… · Durdur';
+  try { await runTableAi(tip, ctl.signal); toast('Claude önerisi eklendi'); }
+  catch (e) { if (!(e && e.code === 'cancelled')) toast(aiFail(e)); }
+  finally { if (aiCtl[tip] === ctl) delete aiCtl[tip]; if (btn.isConnected) btn.innerHTML = label; }
+}
+async function runAi(k) {
+  const p = liveProject(); if (!p || !sample) return;
+  const box = $('#ai-' + k); if (!box) return;
+  if (aiCtl[k]) aiCtl[k].abort();
+  const ctl = new AbortController(); aiCtl[k] = ctl;
+  box.hidden = false;
+  box.innerHTML = `<div class="ai-head"><span>${ic('spark', 'sm')}Claude önerisi</span><button type="button" class="btn ghost sm" data-act="ai-stop" data-k="${k}">Durdur</button></div><div class="ai-text wait">Düşünüyor… (ilk yanıt 10–60 saniye sürebilir)</div><div class="ai-actions" hidden></div>`;
+  const out = $('.ai-text', box), acts = $('.ai-actions', box), stop = $('[data-act="ai-stop"]', box);
+  const finish = (text, note) => {
+    stop.remove();
+    text = cleanAi(text);
+    if (!text) { box.hidden = true; return; }
+    aiText[k] = text; out.classList.remove('wait'); out.textContent = text;
+    acts.hidden = false;
+    acts.innerHTML = `${note ? `<p class="muted" style="width:100%;font-size:13px">${esc(note)}</p>` : ''}<button type="button" class="btn primary sm" data-act="ai-apply" data-k="${k}" data-mode="replace">Metnin yerine koy</button><button type="button" class="btn sm" data-act="ai-apply" data-k="${k}" data-mode="append">Sonuna ekle</button><button type="button" class="btn ghost sm" data-act="ai-close" data-k="${k}">Vazgeç</button>`;
+  };
+  try {
+    const res = await sample(buildSectionPrompt(p, k), { signal: ctl.signal, cache: false, onText: ({ text }) => { out.classList.remove('wait'); out.textContent = text; } });
+    if (box.isConnected) finish(res.text, res.truncated ? 'Yanıt yarıda kesildi; gerekirse tekrar isteyin.' : '');
+  } catch (e) {
+    if (!box.isConnected) return;
+    const c = e && e.code;
+    if (c === 'cancelled') { if (e.text) finish(e.text, 'Durduruldu.'); else box.hidden = true; }
+    else if (HIDE_AI.includes(c)) { box.hidden = true; toast(aiFail(e)); }
+    else if (e && e.text) finish(e.text, 'Yanıt tamamlanamadı: ' + aiMsg(c));
+    else { stop.remove(); out.classList.remove('wait'); out.textContent = aiMsg(c); acts.hidden = false; acts.innerHTML = `<button type="button" class="btn sm" data-act="ai" data-k="${k}">Tekrar dene</button><button type="button" class="btn ghost sm" data-act="ai-close" data-k="${k}">Kapat</button>`; }
+  } finally { if (aiCtl[k] === ctl) delete aiCtl[k]; }
+}
+function applyAi(k, mode) {
+  const p = currentProject(), t = $('#sec-' + k), text = aiText[k];
+  if (!p || !t || !text) return;
+  t.value = mode === 'append' && filled(t.value) ? t.value.replace(/\s+$/, '') + '\n\n' + text : text;
+  autosize(t); queueField(p.id, ['bolumler', k], t.value); updateSecMeta(k, t.value);
+  $('#ai-' + k).hidden = true; delete aiText[k];
+  markAi(k);
+  toast('Metin bölüme eklendi');
+}
+function isEmptySec(p, b) { return b.ai !== false && !secFilled(p, b); }
+async function fillAll() {
+  if (fillCtl) { fillCtl.abort(); return; }
+  const p0 = liveProject(); if (!p0 || !sample) return;
+  const pid = p0.id, ctl = new AbortController(); fillCtl = ctl;
+  const btn = $('#fillBtn'), prog = $('#fillProg');
+  const todo = progOf(p0).bolumler.filter(b => isEmptySec(p0, b));
+  if (!todo.length) { prog.textContent = 'Doldurulacak boş bölüm yok.'; fillCtl = null; return; }
+  btn.textContent = 'Durdur';
+  let done = 0;
+  try {
+    for (const b of todo) {
+      if (ctl.signal.aborted || S.openProject !== pid) break;
+      prog.textContent = `${done + 1}/${todo.length} · ${b.ad} yazılıyor…`;
+      const li = $('#s-' + b.k); if (li) li.scrollIntoView({ block: 'nearest' });
+      if (b.tip) await runTableAi(b.tip, ctl.signal);
+      else {
+        const ta = $('#sec-' + b.k);
+        const res = await sample(buildSectionPrompt(liveProject(), b.k), { signal: ctl.signal, cache: false, onText: ({ text }) => { if (ta && ta.isConnected) { ta.value = cleanAi(text); autosize(ta); } } });
+        if (S.openProject !== pid || !ta || !ta.isConnected) break;
+        ta.value = cleanAi(res.text); autosize(ta);
+        queueField(pid, ['bolumler', b.k], ta.value); updateSecMeta(b.k, ta.value); markAi(b.k);
+      }
+      done++;
+    }
+    if (prog.isConnected) prog.textContent = `${done} bölüm yazıldı. Metinleri öğrencilerinizle okuyup düzenleyin.`;
+  } catch (e) {
+    const c = e && e.code;
+    const cur = todo[done], ta = cur && !cur.tip && $('#sec-' + cur.k);
+    if (ta && ta.isConnected && filled(ta.value)) { queueField(pid, ['bolumler', cur.k], ta.value); updateSecMeta(cur.k, ta.value); markAi(cur.k); }
+    if (prog.isConnected) prog.textContent = c === 'cancelled' ? `Durduruldu · ${done} bölüm yazıldı.` : aiFail(e);
+  } finally {
+    if (fillCtl === ctl) fillCtl = null;
+    if (btn.isConnected) btn.innerHTML = `${ic('spark')}Boş bölümleri yaz`;
+    updateStepStatus(liveProject());
+  }
+}
+function fillYz() {
+  const p = liveProject(); if (!p) return;
+  const now = today0(), ks = p.yzBolumler || [];
+  const names = ks.map(k => (progOf(p).bolumler.find(b => b.k === k || b.tip === k) || {}).ad).filter(Boolean);
+  const yz = Object.assign({}, p.yz);
+  if (!names.length) { toast('Bu projede henüz Claude ile yazılan bölüm yok.'); return; }
+  yz.arac = `Claude (Anthropic), ${AYLAR[now.getMonth()]} ${now.getFullYear()}`;
+  yz.amac = 'Rapor bölümleri için taslak metin oluşturma, dil ve anlatım düzeltme';
+  yz.kapsam = `${names.join(', ')} bölümlerinde taslak metin desteği`;
+  if (!filled(yz.mudahale)) yz.mudahale = '[Claude çıktılarının ne ölçüde düzenlendiğini ve kaynakların nasıl doğrulandığını yazın]';
+  ['arac', 'amac', 'kapsam', 'mudahale'].forEach(k => { const el = $(`[data-f="yz.${k}"]`); if (el) { el.value = yz[k]; autosize(el); } });
+  saveNow({ yz, yzKullanildi: true });
+  toast('Beyan dolduruldu; "İnsan müdahalesi" alanını kendiniz tamamlayın');
+}
+
+let ideaCtl = null, lastIdeas = null;
+async function genIdeas() {
+  if (!sample) return;
+  const prog = $('#ig-prog').value, duzey = $('#ig-duzey').value, konu = $('#ig-konu').value.trim();
+  const pr = PROGRAMS[prog], out = $('#ideaOut'), btn = $('#ig-btn');
+  const alt = prog === 'tubitak' ? (duzey === 'Lise' ? pr.alt[1] : pr.alt[0]) : '';
+  if (ideaCtl) ideaCtl.abort();
+  const ctl = new AbortController(); ideaCtl = ctl;
+  btn.disabled = true;
+  out.innerHTML = '<p class="idea-status">Fikirler hazırlanıyor… <button type="button" class="btn ghost sm" data-act="idea-stop">Durdur</button></p>';
+  const prompt = [
+    `${prog === 'tubitak' ? 'TÜBİTAK ' + alt : 'TEKNOFEST 2026 teknoloji yarışmaları'} için ${lower(duzey)} öğrencileriyle, danışman öğretmen rehberliğinde yürütülebilecek 4 özgün proje fikri öner.`,
+    konu ? `Öğretmenin ilgilendiği konu: ${konu}.` : 'Konu serbest; güncel ve okul hayatına yakın sorunlara odaklan.',
+    prog === 'tubitak' ? `"kategori" alanına şu ana alanlardan birini yaz: ${ANA_ALANLAR.join(', ')}.` : `"kategori" alanına şu yarışmalardan birini yaz: ${pr.kategoriler.join(', ')}.`,
+    'Fikirler okul imkânlarıyla, düşük maliyetle ve bir eğitim-öğretim yılı içinde yapılabilir olsun. Uydurma istatistik kullanma.',
+    'Yalnızca şu biçimde bir JSON dizisi döndür, başka metin yazma:',
+    '[{"baslik": "kısa ve akılda kalıcı proje adı", "kategori": "alan", "ozet": "2-3 cümlelik açıklama", "neden": "bu programa neden uygun olduğu, tek cümle"}]'
+  ].join('\n');
+  try {
+    const res = await sample.json(prompt, { signal: ctl.signal, cache: false });
+    const ideas = (Array.isArray(res) ? res : []).filter(x => x && typeof x.baslik === 'string' && x.baslik.trim()).slice(0, 6);
+    if (!out.isConnected) return;
+    if (!ideas.length) { out.innerHTML = '<p class="idea-status">Fikir üretilemedi. Konuyu değiştirip tekrar deneyin.</p>'; return; }
+    lastIdeas = { prog, alt, duzey, ideas };
+    out.innerHTML = `<div class="idea-list">${ideas.map((it, i) => `<article class="idea"><h3>${esc(it.baslik)}</h3>${it.kategori ? `<p class="idea-kat">${esc(it.kategori)}</p>` : ''}<p>${esc(it.ozet || '')}</p>${it.neden ? `<p class="idea-why">${esc(it.neden)}</p>` : ''}<button class="btn sm primary" type="button" data-act="idea-use" data-i="${i}">Bu fikirle başla</button></article>`).join('')}</div>`;
+  } catch (e) {
+    if (!out.isConnected) return;
+    if (e && e.code === 'cancelled') { out.innerHTML = ''; return; }
+    out.innerHTML = `<p class="idea-status">${esc(aiFail(e))}</p>`;
+  } finally { if (ideaCtl === ctl) ideaCtl = null; if (btn.isConnected) btn.disabled = false; }
+}
+function useIdea(i) {
+  if (!lastIdeas || !lastIdeas.ideas[i]) return;
+  const it = lastIdeas.ideas[i], kat = String(it.kategori || '').trim();
+  const extra = { baslik: it.baslik.trim(), fikir: [it.ozet, it.neden].filter(Boolean).join(' ') };
+  if (lastIdeas.prog === 'tubitak') { extra.alt = lastIdeas.alt; if (ANA_ALANLAR.includes(kat)) extra.anaAlan = kat; }
+  else { if (kat) extra.kategori = kat; extra.seviye = lastIdeas.duzey; }
+  createProject(lastIdeas.prog, extra);
+  toast('Proje oluşturuldu');
+}
+
+/* ── Olaylar ── */
+document.addEventListener('click', e => {
+  const sum = e.target.closest('details.menu');
+  closeMenus(sum);
+  const el = e.target.closest('[data-act]');
+  if (!el) { if (e.target.id === 'modal') closeAll(); return; }
+  const a = el.dataset.act, id = el.dataset.id, v = el.dataset.v;
+  switch (a) {
+    case 'view': setView(v); break;
+    case 'close': closeAll(); break;
+    case 'student-new': openStudent(null); break;
+    case 'student-open': openStudent(id); break;
+    case 'student-bulk': openBulk(); break;
+    case 'student-del': armConfirm(el, 'Silmek için tekrar tıklayın', () => { write('ogrenciler', id, 'delete'); closeAll(); toast('Öğrenci silindi'); }); break;
+    case 'obs-del': armConfirm(el, 'Sil', () => delObs(id)); break;
+    case 'pick': $$('button', el.parentNode).forEach(b => b.setAttribute('aria-pressed', String(b === el))); break;
+    case 'dev-step': { const i = $('#sf-dev'); i.value = Math.max(0, (parseFloat(String(i.value).replace(',', '.')) || 0) + Number(v)); break; }
+    case 'f-sinif': S.f.sinif = v; renderStudents(); break;
+    case 'f-durum': S.f.durum = S.f.durum === v ? '' : v; renderStudents(); break;
+    case 'clear-filters': S.f = { q: '', sinif: '', durum: '' }; $('#studentSearch').value = ''; renderStudents(); break;
+    case 'del-ex': armConfirm(el, 'Emin misiniz? Sil', () => deleteExamples(el.dataset.col)); break;
+    case 'link-add': openLinkModal(el.dataset.bolum); break;
+    case 'link-edit': openLinkModal(null, id); break;
+    case 'link-del': armConfirm(el, 'Silmek için tekrar tıklayın', () => { write('baglantilar', id, 'delete'); closeAll(); toast('Bağlantı silindi'); }); break;
+    case 'pf': S.pf = v; renderProjectList(); break;
+    case 'project-open': closeAll(); openProject(id); break;
+    case 'project-home': case 'project-close':
+      flushAll(); abortAi(); S.openProject = null; renderEditor(); renderProjectList();
+      if (window.innerWidth < 900) $('#editor').scrollIntoView({ block: 'start' });
+      break;
+    case 'project-create': closeAll(); createProject(el.dataset.program); break;
+    case 'step': goStep(Number(v)); break;
+    case 'p-durum': $$('#ed-durum button').forEach(b => b.setAttribute('aria-pressed', String(b === el))); saveNow({ durum: v }); break;
+    case 'team-del': { const p = currentProject(); if (p) setTeam((p.ekip || []).filter(x => x !== id)); break; }
+    case 'row-add': rowAdd(el.dataset.arr); break;
+    case 'row-del': rowDel(el.dataset.arr, Number(el.dataset.i)); break;
+    case 'project-copy': copyProject(); break;
+    case 'docx': downloadDocx(); break;
+    case 'project-del': armConfirm(el, 'Silmek için tekrar tıklayın', () => {
+      const p = currentProject(); if (!p) return;
+      Array.from(pending.keys()).filter(k => k.startsWith(p.id + '|')).forEach(k => { pending.delete(k); clearTimeout(timers.get(k)); dirty.delete(k); });
+      abortAi(); write('projeler', p.id, 'delete'); S.openProject = null; renderEditor(); renderProjectList(); toast('Proje silindi');
+    }); break;
+    case 'ai': runAi(el.dataset.k); break;
+    case 'ai-stop': if (aiCtl[el.dataset.k]) aiCtl[el.dataset.k].abort(); break;
+    case 'ai-apply': applyAi(el.dataset.k, el.dataset.mode); break;
+    case 'ai-close': { const b = $('#ai-' + el.dataset.k); if (b) b.hidden = true; break; }
+    case 'ai-table': runTableBtn(el, v); break;
+    case 'fill-all': fillAll(); break;
+    case 'yz-fill': fillYz(); break;
+    case 'idea-stop': if (ideaCtl) ideaCtl.abort(); break;
+    case 'idea-use': useIdea(Number(el.dataset.i)); break;
+  }
+});
+document.addEventListener('submit', e => {
+  const id = e.target.id;
+  if (id === 'loginForm') return;
+  e.preventDefault();
+  if (id === 'studentForm') saveStudent();
+  else if (id === 'obsForm') addObs();
+  else if (id === 'linkForm') saveLink();
+  else if (id === 'bulkForm') saveBulk();
+  else if (id === 'ideaForm') genIdeas();
+});
+const LATER = ['date', 'month', 'number', 'checkbox', 'radio'];
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'studentSearch') { S.f.q = t.value; renderStudents(); return; }
+  if (t.id === 'bk-text' || t.id === 'bk-sinif') { updateBulkPreview(); return; }
+  const ed = t.closest && t.closest('.ed'); if (!ed) return;
+  const pid = ed.dataset.pid, row = t.closest('[data-row]');
+  if (row) {
+    if (LATER.includes(t.type)) return;
+    if (t.tagName === 'TEXTAREA') autosize(t);
+    queueField(pid, [row.dataset.row], collectArr(row.dataset.row));
+    updateStepStatus(liveProject());
+    return;
+  }
+  if (!t.dataset.f || t.tagName === 'SELECT' || LATER.includes(t.type)) return;
+  if (t.tagName === 'TEXTAREA') autosize(t);
+  queueField(pid, t.dataset.f.split('.'), t.value);
+  if (t.dataset.k) updateSecMeta(t.dataset.k, t.value);
+  updateStepStatus(liveProject());
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'lf-bolum') { const b = BOLUM[t.value]; $('#lf-baslik').placeholder = b.ornek; $('#lf-aciklama').placeholder = b.acik; return; }
+  const ed = t.closest && t.closest('.ed'); if (!ed) return;
+  const row = t.closest('[data-row]');
+  if (row) { saveArrNow(row.dataset.row, collectArr(row.dataset.row)); return; }
+  if (t.id === 'uyeAdd') { if (t.value) addUyeFromStudent(t.value); return; }
+  if (t.id === 'ed-addTeam') { if (t.value) { const p = currentProject(); if (p) { t.blur(); setTeam((p.ekip || []).concat([t.value])); } } return; }
+  if (!t.dataset.f || !(t.tagName === 'SELECT' || LATER.includes(t.type))) return;
+  let val = t.value;
+  if (t.type === 'number') { val = Math.min(12, Math.max(2, Math.round(Number(t.value)) || 6)); t.value = val; }
+  saveNow(nest(t.dataset.f.split('.'), val));
+  const lp = liveProject(); if (lp) { renderDue(lp); updateStepStatus(lp); }
+});
+document.addEventListener('focusout', e => { if (e.target.closest && e.target.closest('.ed') && pending.size) flushAll(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('details.menu[open]')) { closeMenus(); return; }
+  if (!$('#modal').hidden || !$('#drawer').hidden) closeAll();
+});
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAll(); });
+window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== S.view) setView(v, true); });
+
+/* ── Başlat ── */
+const dlist = (id, items) => { let el = document.getElementById(id); if (!el) { el = document.createElement('datalist'); el.id = id; document.body.appendChild(el); } el.innerHTML = items.map(c => `<option value="${esc(c)}"></option>`).join(''); };
+dlist('dl-kat-teknofest', PROGRAMS.teknofest.kategoriler); dlist('dl-ana', ANA_ALANLAR); dlist('dl-tematik', TEMATIK_ALANLAR);
+renderCalendar(); renderSync();
+renderStudents(); renderNotlar(); renderFiles(); renderPlans(); renderProjectList(); renderMiniProjects();
+setView(location.hash.slice(1), true);
+connect();
+})();
+</script>
+</body>
+</html>

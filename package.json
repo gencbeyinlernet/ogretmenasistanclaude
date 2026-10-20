@@ -1,0 +1,18 @@
+{
+  "name": "okul-takip-sistemi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Burak TURGUT Okul Takip Sistemi: öğrenci takibi, Drive bağlantıları, yıllık planlar ve TEKNOFEST / TÜBİTAK proje hazırlama",
+  "type": "module",
+  "main": "sunucu.js",
+  "scripts": {
+    "start": "node sunucu.js"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.136.0"
+  }
+}
